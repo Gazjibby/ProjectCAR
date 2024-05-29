@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:projectcar/Model/active_ride.dart';
 import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
+import 'package:projectcar/Utils/colours.dart';
 import 'package:provider/provider.dart';
 
 class ActiveRide extends StatefulWidget {
@@ -11,6 +13,41 @@ class ActiveRide extends StatefulWidget {
 }
 
 class _ActiveRideState extends State<ActiveRide> {
+  void _showRideDetailsDialog(
+      BuildContext context, ActiveRideModel activeRide) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Ride Details'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('User Request: ${activeRide.userRequest}'),
+                Text('Name: ${activeRide.userName}'),
+                Text('Pickup Location: ${activeRide.pickupLocation}'),
+                Text('Dropoff Location: ${activeRide.dropoffLocation}'),
+                Text('Pickup Date: ${activeRide.pickupDate}'),
+                Text('Pickup Time: ${activeRide.pickupTime}'),
+                Text('Passenger Count: ${activeRide.passengerCount}'),
+                Text('Price: RM ${activeRide.price}'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final driverProvider = Provider.of<DriverProvider>(context);
 
@@ -22,75 +59,72 @@ class _ActiveRideState extends State<ActiveRide> {
         body: Consumer<ActiveRideProvider>(
           builder: (context, provider, child) {
             if (provider.activeRide == null) {
-              return Center(child: const Text('No active ride.'));
+              return const Center(child: Text('No active ride.'));
             } else {
               final activeRide = provider.activeRide!;
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'User Request: ${activeRide.userRequest}',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+              return Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.uniPeach,
+                        child: SizedBox(
+                          width: 370,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Head to ${activeRide.pickupLocation} by ${activeRide.pickupTime}',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.uniMaroon,
+                                  ),
+                                  child: Text(
+                                    'Cancel Ride',
+                                    style: TextStyle(
+                                      color: AppColors.uniGold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Name: ${activeRide.userName}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Pickup Location: ${activeRide.pickupLocation}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Dropoff Location: ${activeRide.dropoffLocation}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Pickup Date: ${activeRide.pickupDate}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Pickup Time: ${activeRide.pickupTime}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Passenger Count: ${activeRide.passengerCount}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Price: RM ${activeRide.price}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          _showRideDetailsDialog(context, activeRide);
+                        },
+                        backgroundColor: AppColors.uniMaroon,
+                        foregroundColor: AppColors.uniPeach,
+                        child: const Icon(Icons.info),
+                      ),
+                    ),
+                  ),
+                ],
               );
             }
           },
         ),
       ),
     );
-  }
-}
-
-extension DateHelpers on DateTime {
-  String toShortString() {
-    return "${this.day}/${this.month}/${this.year}";
   }
 }

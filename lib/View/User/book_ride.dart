@@ -36,50 +36,7 @@ class _BookRideState extends State<BookRide> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (viewModel.rideStatusMessage.isNotEmpty)
-                      Material(
-                        elevation: 4,
-                        borderRadius: BorderRadius.circular(12),
-                        color: AppColors.uniPeach,
-                        child: Container(
-                          width: 370,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      viewModel.rideStatusMessage,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 6),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    viewModel.cancelRide();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.uniMaroon,
-                                  ),
-                                  child: Text(
-                                    'Cancel Ride',
-                                    style: TextStyle(
-                                      color: AppColors.uniGold,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    const Spacer(),
+                    if (viewModel.rideStatusMessage.isNotEmpty) const Spacer(),
                     Container(
                       margin: const EdgeInsets.only(bottom: 10.0, right: 10.0),
                       child: Align(

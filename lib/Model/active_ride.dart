@@ -1,4 +1,4 @@
-class ActiveRide {
+class ActiveRideModel {
   final String userRequest;
   final String userName;
   final String driverAccepted;
@@ -8,9 +8,9 @@ class ActiveRide {
   final String pickupTime;
   final int passengerCount;
   final int price;
-  final int status;
+  final String status;
 
-  ActiveRide(
+  ActiveRideModel(
       {required this.userRequest,
       required this.userName,
       required this.driverAccepted,
@@ -22,8 +22,8 @@ class ActiveRide {
       required this.price,
       required this.status});
 
-  factory ActiveRide.fromMap(Map<String, dynamic> data, String id) {
-    return ActiveRide(
+  factory ActiveRideModel.fromMap(Map<String, dynamic> data) {
+    return ActiveRideModel(
       userRequest: data['UserRequest'],
       userName: data['UserName'],
       status: data['Status'],
