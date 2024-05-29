@@ -25,9 +25,6 @@ class _BookRideState extends State<BookRide> {
     return ChangeNotifierProvider(
       create: (_) => _viewModel,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Book Ride'),
-        ),
         body: Padding(
           padding: const EdgeInsets.only(top: 16.0),
           child: Consumer<BookRideViewModel>(
@@ -36,7 +33,52 @@ class _BookRideState extends State<BookRide> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (viewModel.rideStatusMessage.isNotEmpty) const Spacer(),
+                    if (viewModel.rideStatusMessage.isNotEmpty)
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Material(
+                            elevation: 4,
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.uniPeach,
+                            child: SizedBox(
+                              width: 370,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      viewModel.rideStatusMessage,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        viewModel.cancelRide();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.uniMaroon,
+                                      ),
+                                      child: Text(
+                                        'Cancel Ride',
+                                        style: TextStyle(
+                                          color: AppColors.uniGold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    const Spacer(),
                     Container(
                       margin: const EdgeInsets.only(bottom: 10.0, right: 10.0),
                       child: Align(

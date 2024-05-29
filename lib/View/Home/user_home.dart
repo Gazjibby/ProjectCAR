@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:projectcar/Providers/top_nav_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/View/User/book_ride.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/bottom_nav_provider.dart';
 import 'package:projectcar/View/User/logout.dart';
+import 'package:projectcar/View/User/user_acc.dart';
 import 'package:provider/provider.dart';
 
 class UserHome extends StatefulWidget {
@@ -16,14 +18,31 @@ class UserHome extends StatefulWidget {
 class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<BottomNavProvider>(builder: (context, nav, child) {
+    return Consumer2<BottomNavProvider, TopNavProvider>(
+        builder: (context, bottomNav, topNav, child) {
       return Scaffold(
-        body: _pages[nav.currentIndex],
+        appBar: AppBar(
+          title: const Text('PREBET UTM'),
+          backgroundColor: AppColors.uniMaroon,
+          foregroundColor: AppColors.uniGold,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.account_circle),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UserAcc()),
+                );
+              },
+            ),
+          ],
+        ),
+        body: _pages[bottomNav.currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: _items,
-          currentIndex: nav.currentIndex,
+          currentIndex: bottomNav.currentIndex,
           onTap: (value) {
-            nav.changeIndex = value;
+            bottomNav.changeIndex = value;
           },
           backgroundColor: AppColors.uniMaroon,
           fixedColor: AppColors.uniPeach,

@@ -67,7 +67,8 @@ class BookRideViewModel extends ChangeNotifier {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Ride Request')
         .where('UserRequest', isEqualTo: userMatricStaffNumber)
-        .where('Status', whereIn: ['Posted', 'Ongoing', 'Accepted']).get();
+        .where('Status',
+            whereIn: ['Posted', 'Ongoing', 'Accepted', 'Active']).get();
 
     return querySnapshot.docs.isNotEmpty;
   }
@@ -91,6 +92,8 @@ class BookRideViewModel extends ChangeNotifier {
         rideStatusMessage = 'Waiting for Driver to accept';
       } else if (status == 'Ongoing') {
         rideStatusMessage = 'Driver has accepted the request';
+      } else if (status == 'Active') {
+        rideStatusMessage = 'Heading to drop off location';
       } else {
         rideStatusMessage = '';
       }

@@ -11,16 +11,49 @@ class ActiveRideProvider with ChangeNotifier {
     final QuerySnapshot result = await FirebaseFirestore.instance
         .collection('Ride Request')
         .where('DriverAccepted', isEqualTo: driverId)
-        .where('Status', isEqualTo: "Ongoing")
-        .get();
+        .where('Status', whereIn: ['Ongoing', 'Active']).get();
 
     if (result.docs.isNotEmpty) {
       _activeRide = ActiveRideModel.fromMap(
-          result.docs.first.data() as Map<String, dynamic>);
+          result.docs.first.data() as Map<String, dynamic>,
+          result.docs.first.id);
     } else {
       _activeRide = null;
     }
 
     notifyListeners();
   }
+
+  Future<void> confirmPassengerPickup() async {
+    if (_activeRide != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('Ride Request')
+            .doc(_activeRide!.rideID)
+            .update({'Status': 'Active'});
+
+        final rideLogQuerySnapshot = await FirebaseFirestore.instance
+            .collection('Ride Log')
+            .where('rideReqID', isEqualTo: _activeRide!.rideID)
+            .get();
+
+        for (var doc in rideLogQuerySnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection('Ride Log')
+              .doc(doc.id)
+              .update({
+            'UpTime': Timestamp.now(),
+            'Status': 'Passenger Pickup Confirmed',
+          });
+        }
+        await fetchActiveRide(_activeRide!.driverAccepted);
+
+        notifyListeners();
+      } catch (e) {
+        print('Failed to confirm pickup: $e');
+      }
+    }
+  }
+
+  Future<void> completeRide() async {}
 }

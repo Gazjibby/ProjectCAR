@@ -62,6 +62,9 @@ class _ActiveRideState extends State<ActiveRide> {
               return const Center(child: Text('No active ride.'));
             } else {
               final activeRide = provider.activeRide!;
+              final displayText = activeRide.status == 'Active'
+                  ? 'Head to ${activeRide.dropoffLocation}'
+                  : 'Head to ${activeRide.pickupLocation} by ${activeRide.pickupTime}';
               return Stack(
                 children: [
                   Align(
@@ -80,7 +83,7 @@ class _ActiveRideState extends State<ActiveRide> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Head to ${activeRide.pickupLocation} by ${activeRide.pickupTime}',
+                                  displayText,
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -106,9 +109,37 @@ class _ActiveRideState extends State<ActiveRide> {
                     ),
                   ),
                   Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: SizedBox(
+                        width: 200,
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            if (activeRide.status != 'Active') {
+                              provider.confirmPassengerPickup();
+                            } else {
+                              provider.completeRide();
+                            }
+                          },
+                          backgroundColor: activeRide.status != 'Active'
+                              ? Colors.greenAccent
+                              : Colors.greenAccent,
+                          foregroundColor: Colors.white,
+                          child: Text(
+                            activeRide.status != 'Active'
+                                ? 'Confirm Passenger Pickup'
+                                : 'Complete Ride Request',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Align(
                     alignment: Alignment.bottomRight,
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(15.0),
                       child: FloatingActionButton(
                         onPressed: () {
                           _showRideDetailsDialog(context, activeRide);

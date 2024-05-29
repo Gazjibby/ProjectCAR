@@ -133,7 +133,7 @@ class _RideReqState extends State<RideReq> {
           'UserRequest': rideRequest.userRequest,
           'DriverAccepted': driverMatricStaffNumber,
           'Status': 'Ongoing',
-          'AcceptedAt': FieldValue.serverTimestamp()
+          'UpTime': FieldValue.serverTimestamp()
         };
         await FirebaseFirestore.instance
             .collection('Ride Log')
