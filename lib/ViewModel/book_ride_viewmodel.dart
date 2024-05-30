@@ -94,6 +94,8 @@ class BookRideViewModel extends ChangeNotifier {
         rideStatusMessage = 'Driver has accepted the request';
       } else if (status == 'Active') {
         rideStatusMessage = 'Heading to drop off location';
+      } else if (status == 'Waiting to Complete') {
+        rideStatusMessage = 'Confirm Ride Completion';
       } else {
         rideStatusMessage = '';
       }
@@ -146,5 +148,205 @@ class BookRideViewModel extends ChangeNotifier {
     }).catchError((error) {
       print('Error posting ride booking: $error');
     });
+  }
+
+  Future<void> confirmcompleteRide() async {
+    notifyListeners();
+  }
+
+  void showConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Booking Details'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (selectedPickup != null && selectedDropoff != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Pickup Location: $selectedPickup'),
+                      Text('Dropoff Location: $selectedDropoff'),
+                      Text(
+                          'Pickup Date: ${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'),
+                      Text('Pickup Time: ${selectedTime!.format(context)}'),
+                      Text('Passenger Count: $numOfPax'),
+                      if (price != null)
+                        Text(
+                          'Price: RM$price',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                postRideBooking();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Confirm Booking'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showBookingForm(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Book Ride'),
+          content: SizedBox(
+            height: 370,
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    DropdownButtonFormField<String>(
+                      decoration:
+                          const InputDecoration(labelText: 'Pickup Location'),
+                      items: getPickupItems(),
+                      value: selectedPickup,
+                      onChanged: (value) {
+                        selectedPickup = value;
+                        updatePrice();
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a pickup location';
+                        }
+                        return null;
+                      },
+                    ),
+                    DropdownButtonFormField<String>(
+                      decoration:
+                          const InputDecoration(labelText: 'Dropoff Location'),
+                      items: getDropOffItems(),
+                      value: selectedDropoff,
+                      onChanged: (value) {
+                        selectedDropoff = value;
+                        updatePrice();
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a dropoff location';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                          labelText: 'Number of Passengers'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the number of passengers';
+                        }
+                        final number = int.tryParse(value);
+                        if (number == null || number <= 0) {
+                          return 'Please enter a valid number of passengers';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        numOfPax = int.tryParse(value);
+                      },
+                    ),
+                    TextFormField(
+                      decoration:
+                          const InputDecoration(labelText: 'Select Date'),
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (pickedDate != null) {
+                          selectedDate = pickedDate;
+                        }
+                      },
+                      validator: (value) {
+                        if (selectedDate == null) {
+                          return 'Please select a date';
+                        }
+                        return null;
+                      },
+                      controller: TextEditingController(
+                          text: selectedDate != null
+                              ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
+                              : ''),
+                    ),
+                    TextFormField(
+                      decoration:
+                          const InputDecoration(labelText: 'Select Time'),
+                      readOnly: true,
+                      onTap: () async {
+                        TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: selectedTime ?? TimeOfDay.now(),
+                        );
+                        if (pickedTime != null) {
+                          selectedTime = pickedTime;
+                        }
+                      },
+                      validator: (value) {
+                        if (selectedTime == null) {
+                          return 'Please select a time';
+                        }
+                        return null;
+                      },
+                      controller: TextEditingController(
+                          text: selectedTime != null
+                              ? selectedTime!.format(context)
+                              : ''),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+                  showConfirmation(context);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Book Ride'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

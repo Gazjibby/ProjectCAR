@@ -42,10 +42,15 @@ class ActiveRideProvider with ChangeNotifier {
               .collection('Ride Log')
               .doc(doc.id)
               .update({
-            'UpTime': Timestamp.now(),
-            'Status': 'Passenger Pickup Confirmed',
+            'StatusHistory': FieldValue.arrayUnion([
+              {
+                'Status': 'Passenger Pickup Confirmed, in progress',
+                'UpTime': FieldValue.serverTimestamp(),
+              }
+            ])
           });
         }
+
         await fetchActiveRide(_activeRide!.driverAccepted);
 
         notifyListeners();
@@ -55,5 +60,39 @@ class ActiveRideProvider with ChangeNotifier {
     }
   }
 
-  Future<void> completeRide() async {}
+  Future<void> completeRide() async {
+    if (_activeRide != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('Ride Request')
+            .doc(_activeRide!.rideID)
+            .update({'Status': 'Ride Complete, waiting user confirmation'});
+
+        final rideLogQuerySnapshot = await FirebaseFirestore.instance
+            .collection('Ride Log')
+            .where('rideReqID', isEqualTo: _activeRide!.rideID)
+            .get();
+
+        for (var doc in rideLogQuerySnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection('Ride Log')
+              .doc(doc.id)
+              .update({
+            'StatusHistory': FieldValue.arrayUnion([
+              {
+                'Status': 'Ride Complete, waiting user confirmation',
+                'UpTime': FieldValue.serverTimestamp(),
+              }
+            ])
+          });
+        }
+
+        await fetchActiveRide(_activeRide!.driverAccepted);
+
+        notifyListeners();
+      } catch (e) {
+        print('Failed to complete ride: $e');
+      }
+    }
+  }
 }

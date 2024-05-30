@@ -78,7 +78,7 @@ class _RideReqState extends State<RideReq> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SizedBox(height: 8.0),
+                                    const SizedBox(height: 8.0),
                                     Text(
                                         'Pickup Location: ${rideRequest.pickupLocation}'),
                                     Text(
@@ -128,19 +128,24 @@ class _RideReqState extends State<RideReq> {
           'Status': 'Ongoing'
         });
 
-        Map<String, dynamic> rideLogData = {
+        Map<String, dynamic> initialRideLogData = {
           'rideReqID': rideRequest.rideReqID,
           'UserRequest': rideRequest.userRequest,
           'DriverAccepted': driverMatricStaffNumber,
-          'Status': 'Ongoing',
-          'UpTime': FieldValue.serverTimestamp()
+          'StatusHistory': [
+            {
+              'Status': 'Ongoing',
+              'UpTime': FieldValue.serverTimestamp(),
+            }
+          ]
         };
+
         await FirebaseFirestore.instance
             .collection('Ride Log')
-            .add(rideLogData);
+            .add(initialRideLogData);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Ride request accepted successfully.'),
           ),
         );
@@ -156,7 +161,7 @@ class _RideReqState extends State<RideReq> {
       builder: (BuildContext context) {
         _dialogContext = context; // Store the dialog context
         return AlertDialog(
-          title: Text('Accept Booking?'),
+          title: const Text('Accept Booking?'),
           content: Text(
               'Do you want to accept the booking for ${rideRequest.userName}?'),
           actions: [
@@ -165,13 +170,13 @@ class _RideReqState extends State<RideReq> {
                 _acceptRideRequest(rideRequest);
                 Navigator.of(context).pop();
               },
-              child: Text('Accept'),
+              child: const Text('Accept'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Decline'),
+              child: const Text('Decline'),
             ),
           ],
         );
