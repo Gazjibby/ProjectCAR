@@ -5,6 +5,7 @@ import 'package:projectcar/Providers/get_ride_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class RideReq extends StatefulWidget {
   const RideReq({Key? key}) : super(key: key);
@@ -107,6 +108,9 @@ class _RideReqState extends State<RideReq> {
     final String? driverMatricStaffNumber =
         driverProvider.driver?.matricStaffNumber;
 
+    DateTime now = DateTime.now();
+    String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
     if (driverMatricStaffNumber != null) {
       bool ongoingRide = await Provider.of<RideProvider>(context, listen: false)
           .hasOngoingRide(context, driverMatricStaffNumber);
@@ -128,29 +132,31 @@ class _RideReqState extends State<RideReq> {
           'Status': 'Ongoing'
         });
 
-        Map<String, dynamic> initialRideLogData = {
-          'rideReqID': rideRequest.rideReqID,
-          'UserRequest': rideRequest.userRequest,
-          'DriverAccepted': driverMatricStaffNumber,
-          'StatusHistory': [
-            {
-              'Status': 'Ongoing',
-              'UpTime': FieldValue.serverTimestamp(),
-            }
-          ]
-        };
-
-        await FirebaseFirestore.instance
+        final rideLogQuerySnapshot = await FirebaseFirestore.instance
             .collection('Ride Log')
-            .add(initialRideLogData);
+            .where('rideReqID', isEqualTo: rideRequest.rideReqID)
+            .get();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ride request accepted successfully.'),
-          ),
-        );
+        for (var doc in rideLogQuerySnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection('Ride Log')
+              .doc(doc.id)
+              .update({
+            'DriverAccepted': driverMatricStaffNumber,
+            'StatusHistory': FieldValue.arrayUnion([
+              {
+                'Status': 'Driver Accepted User Request',
+                'UpTime': formattedTimestamp,
+              }
+            ])
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ride request accepted successfully.'),
+            ),
+          );
+        }
       }
-    } else {
       print('Driver information not available.');
     }
   }

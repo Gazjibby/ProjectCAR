@@ -33,56 +33,71 @@ class _BookRideState extends State<BookRide> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Material(
-                          elevation: 4,
-                          borderRadius: BorderRadius.circular(12),
-                          color: AppColors.uniPeach,
-                          child: SizedBox(
-                            width: 370,
+                    FutureBuilder<bool>(
+                      future: viewModel.hasActiveRide(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (snapshot.hasData && snapshot.data == true) {
+                          return Align(
+                            alignment: Alignment.topCenter,
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    viewModel.rideStatusMessage,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
+                              padding: const EdgeInsets.all(16.0),
+                              child: Material(
+                                elevation: 4,
+                                borderRadius: BorderRadius.circular(12),
+                                color: AppColors.uniPeach,
+                                child: SizedBox(
+                                  width: 370,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          viewModel.rideStatusMessage,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            if (viewModel.rideStatusMessage ==
+                                                "Confirm Ride Completion") {
+                                              viewModel.confirmcompleteRide();
+                                            } else {
+                                              viewModel.cancelRide();
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                AppColors.uniMaroon,
+                                          ),
+                                          child: Text(
+                                            viewModel.rideStatusMessage ==
+                                                    "Confirm Ride Completion"
+                                                ? 'End Ride'
+                                                : 'Cancel Ride',
+                                            style: TextStyle(
+                                              color: AppColors.uniGold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      if (viewModel.rideStatusMessage ==
-                                          "Confirm Ride Completion") {
-                                        viewModel.confirmcompleteRide();
-                                      } else {
-                                        viewModel.cancelRide();
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.uniMaroon,
-                                    ),
-                                    child: Text(
-                                      viewModel.rideStatusMessage.isEmpty
-                                          ? 'End Ride'
-                                          : 'Cancel Ride',
-                                      style: TextStyle(
-                                        color: AppColors.uniGold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
                     ),
                     const Spacer(),
                     Container(

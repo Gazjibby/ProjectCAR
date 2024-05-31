@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projectcar/Model/active_ride.dart';
+import 'package:intl/intl.dart';
 
 class ActiveRideProvider with ChangeNotifier {
   ActiveRideModel? _activeRide;
 
   ActiveRideModel? get activeRide => _activeRide;
+
+  DateTime now = DateTime.now();
 
   Future<void> fetchActiveRide(String driverId) async {
     final QuerySnapshot result = await FirebaseFirestore.instance
@@ -25,6 +28,8 @@ class ActiveRideProvider with ChangeNotifier {
   }
 
   Future<void> confirmPassengerPickup() async {
+    String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
     if (_activeRide != null) {
       try {
         await FirebaseFirestore.instance
@@ -45,7 +50,7 @@ class ActiveRideProvider with ChangeNotifier {
             'StatusHistory': FieldValue.arrayUnion([
               {
                 'Status': 'Passenger Pickup Confirmed, in progress',
-                'UpTime': FieldValue.serverTimestamp(),
+                'UpTime': formattedTimestamp,
               }
             ])
           });
@@ -61,6 +66,8 @@ class ActiveRideProvider with ChangeNotifier {
   }
 
   Future<void> completeRide() async {
+    String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
     if (_activeRide != null) {
       try {
         await FirebaseFirestore.instance
@@ -81,7 +88,7 @@ class ActiveRideProvider with ChangeNotifier {
             'StatusHistory': FieldValue.arrayUnion([
               {
                 'Status': 'Ride Complete, waiting user confirmation',
-                'UpTime': FieldValue.serverTimestamp(),
+                'UpTime': formattedTimestamp,
               }
             ])
           });

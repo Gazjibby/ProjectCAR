@@ -67,8 +67,13 @@ class BookRideViewModel extends ChangeNotifier {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Ride Request')
         .where('UserRequest', isEqualTo: userMatricStaffNumber)
-        .where('Status',
-            whereIn: ['Posted', 'Ongoing', 'Accepted', 'Active']).get();
+        .where('Status', whereIn: [
+      'Posted',
+      'Ongoing',
+      'Accepted',
+      'Active',
+      'Ride Complete, waiting user confirmation'
+    ]).get();
 
     return querySnapshot.docs.isNotEmpty;
   }
@@ -94,7 +99,7 @@ class BookRideViewModel extends ChangeNotifier {
         rideStatusMessage = 'Driver has accepted the request';
       } else if (status == 'Active') {
         rideStatusMessage = 'Heading to drop off location';
-      } else if (status == 'Waiting to Complete') {
+      } else if (status == 'Ride Complete, waiting user confirmation') {
         rideStatusMessage = 'Confirm Ride Completion';
       } else {
         rideStatusMessage = '';
@@ -119,7 +124,7 @@ class BookRideViewModel extends ChangeNotifier {
     }
   }
 
-  void postRideBooking() {
+  void postRideBooking() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final String userMatricStaffNumber = userProvider.user!.matricStaffNumber;
     final String userFullName = userProvider.user!.fullName;
@@ -144,14 +149,67 @@ class BookRideViewModel extends ChangeNotifier {
         .collection('Ride Request')
         .add(rideRequestData)
         .then((value) {
-      print('Ride booking posted successfully!');
+      print('Ride booking posted successfully! Document ID: ${value.id}');
+
+      String rideReqID = value.id;
+
+      String formattedTimestamp = DateTime.now().toIso8601String();
+      Map<String, dynamic> initialRideLogData = {
+        'rideReqID': rideReqID,
+        'UserRequest': userMatricStaffNumber,
+        'DriverAccepted': 'None',
+        'StatusHistory': [
+          {
+            'Status': 'User Posted',
+            'UpTime': formattedTimestamp,
+          }
+        ]
+      };
+
+      FirebaseFirestore.instance
+          .collection('Ride Log')
+          .add(initialRideLogData)
+          .then((rideLogValue) {
+        print('Ride log added successfully! Document ID: ${rideLogValue.id}');
+      }).catchError((error) {
+        print('Error adding ride log: $error');
+      });
     }).catchError((error) {
       print('Error posting ride booking: $error');
     });
   }
 
   Future<void> confirmcompleteRide() async {
-    notifyListeners();
+    if (activeRideId != null) {
+      await FirebaseFirestore.instance
+          .collection('Ride Request')
+          .doc(activeRideId)
+          .update({'Status': 'Completed'});
+
+      String formattedTimestamp = DateTime.now().toIso8601String();
+
+      QuerySnapshot rideLogQuerySnapshot = await FirebaseFirestore.instance
+          .collection('Ride Log')
+          .where('rideReqID', isEqualTo: activeRideId)
+          .get();
+
+      for (var doc in rideLogQuerySnapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection('Ride Log')
+            .doc(doc.id)
+            .update({
+          'StatusHistory': FieldValue.arrayUnion([
+            {
+              'Status': 'User confirm completion',
+              'UpTime': formattedTimestamp,
+            }
+          ])
+        });
+      }
+      rideStatusMessage = '';
+      activeRideId = null;
+      notifyListeners();
+    }
   }
 
   void showConfirmation(BuildContext context) {
@@ -338,8 +396,8 @@ class BookRideViewModel extends ChangeNotifier {
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   formKey.currentState!.save();
-                  showConfirmation(context);
                   Navigator.of(context).pop();
+                  showConfirmation(context);
                 }
               },
               child: const Text('Book Ride'),
