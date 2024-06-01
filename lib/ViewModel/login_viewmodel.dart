@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Model/driver.dart';
+import 'package:projectcar/Model/admin.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart'; // Import flutter material package for BuildContext
+import 'package:flutter/material.dart';
 
 class LoginViewModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,8 +16,23 @@ class LoginViewModel {
     required String password,
   }) async {
     try {
-      if (email == 'SuperAdmin' && password == '5004705146') {
-        return 'admin';
+      QuerySnapshot<Map<String, dynamic>> adminQuerySnapshot = await _firestore
+          .collection('Admin')
+          .where('Username', isEqualTo: email)
+          .where('Password', isEqualTo: password)
+          .limit(1)
+          .get();
+
+      if (adminQuerySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot<Map<String, dynamic>> adminDoc =
+            adminQuerySnapshot.docs.first;
+        AdminModel adminModel = AdminModel(
+          username: adminDoc.data()?['Username'] ?? '',
+          password: adminDoc.data()?['Password'] ?? '',
+        );
+
+        Provider.of<AdminProvider>(context, listen: false).setAdmin(adminModel);
+        return adminModel;
       }
 
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -32,11 +48,11 @@ class LoginViewModel {
       if (userDoc.exists) {
         UserModel userModel = UserModel(
           email: userCredential.user!.email ?? '',
-          fullName: userDoc['fullname'] ?? '',
-          matricStaffNumber: userDoc['MatricStaffNo'] ?? '',
-          icNumber: userDoc['ICNO'] ?? '',
-          telephoneNumber: userDoc['telNo'] ?? '',
-          college: userDoc['collegeAddress'] ?? '',
+          fullName: userDoc.data()?['fullname'] ?? '',
+          matricStaffNumber: userDoc.data()?['MatricStaffNo'] ?? '',
+          icNumber: userDoc.data()?['ICNO'] ?? '',
+          telephoneNumber: userDoc.data()?['telNo'] ?? '',
+          college: userDoc.data()?['collegeAddress'] ?? '',
         );
 
         Provider.of<UserProvider>(context, listen: false).setUser(userModel);
@@ -51,14 +67,14 @@ class LoginViewModel {
         if (driverDoc.exists) {
           DriverModel driverModel = DriverModel(
             email: userCredential.user!.email ?? '',
-            fullName: driverDoc['fullName'] ?? '',
-            matricStaffNumber: driverDoc['matricStaffNumber'] ?? '',
-            icNumber: driverDoc['icNumber'] ?? '',
-            telephoneNumber: driverDoc['telephoneNumber'] ?? '',
-            college: driverDoc['college'] ?? '',
-            photoUrl: driverDoc['photoUrl'] ?? '',
-            status: driverDoc['status'] ?? '',
-            voteFlag: driverDoc['voteFlag'] ?? '',
+            fullName: driverDoc.data()?['fullName'] ?? '',
+            matricStaffNumber: driverDoc.data()?['matricStaffNumber'] ?? '',
+            icNumber: driverDoc.data()?['icNumber'] ?? '',
+            telephoneNumber: driverDoc.data()?['telephoneNumber'] ?? '',
+            college: driverDoc.data()?['college'] ?? '',
+            photoUrl: driverDoc.data()?['photoUrl'] ?? '',
+            status: driverDoc.data()?['status'] ?? '',
+            voteFlag: driverDoc.data()?['voteFlag'] ?? '',
           );
 
           Provider.of<DriverProvider>(context, listen: false)

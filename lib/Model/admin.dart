@@ -15,7 +15,7 @@ class AdminProvider with ChangeNotifier {
 
   AdminModel? get admin => _admin;
 
-  void setDriver(AdminModel admin) {
+  void setAdmin(AdminModel admin) {
     _admin = admin;
     notifyListeners();
   }

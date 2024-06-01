@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:projectcar/Utils/router.dart';
-import 'package:projectcar/View/Home/user_home.dart';
-import 'package:projectcar/View/Home/driver_home.dart';
+import 'package:projectcar/Model/admin.dart';
 import 'package:projectcar/View/Home/admin_home.dart';
+import 'package:projectcar/View/Home/driver_home.dart';
+import 'package:projectcar/View/Home/user_home.dart';
+import 'package:projectcar/ViewModel/login_viewmodel.dart';
 import 'AccReg/reg_options_view.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Model/driver.dart';
-import 'package:projectcar/ViewModel/login_viewmodel.dart';
 
 class LoginView extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -43,8 +43,7 @@ class LoginView extends StatelessWidget {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () async {
-                final loginViewModel = LoginViewModel();
-                final user = await loginViewModel.loginUser(
+                final user = await viewModel.loginUser(
                   context: context,
                   email: _emailController.text,
                   password: _passwordController.text,
@@ -64,8 +63,13 @@ class LoginView extends StatelessWidget {
                       builder: (context) => DriverHome(driver: user),
                     ),
                   );
-                } else if (user == 'admin') {
-                  nextPage(context, AdminHome(key: UniqueKey()));
+                } else if (user is AdminModel) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminHome(admin: user),
+                    ),
+                  );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:projectcar/Model/admin.dart';
+import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/Utils/message.dart';
 import 'package:projectcar/Utils/router.dart';
+import 'package:projectcar/View/Admin/create_ride_template.dart';
 import 'package:projectcar/View/Admin/driverApp_view.dart';
 import 'package:projectcar/View/Admin/manageDriver_view.dart';
 import 'package:projectcar/View/Admin/manageUser_view.dart';
@@ -12,7 +15,8 @@ import 'package:projectcar/Providers/poll_db_provider.dart';
 import 'package:intl/intl.dart';
 
 class AdminHome extends StatefulWidget {
-  const AdminHome({required Key key}) : super(key: key);
+  final AdminModel admin;
+  const AdminHome({Key? key, required this.admin}) : super(key: key);
 
   @override
   _AdminHomeState createState() => _AdminHomeState();
@@ -25,6 +29,8 @@ class _AdminHomeState extends State<AdminHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.uniMaroon,
+        foregroundColor: AppColors.uniGold,
         title: const Text('Admin Home'),
       ),
       body: Consumer<FetchPollsProvider>(
@@ -56,6 +62,7 @@ class _AdminHomeState extends State<AdminHome> {
                         margin: const EdgeInsets.all(10),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
+                          color: AppColors.uniPeach,
                           border: Border.all(
                               color: const Color.fromARGB(255, 111, 112, 112)),
                           borderRadius: BorderRadius.circular(10),
@@ -118,7 +125,11 @@ class _AdminHomeState extends State<AdminHome> {
                                 ),
                               ),
                             ),
-                            Text(poll["question"]),
+                            Text(
+                              poll["question"],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             const SizedBox(height: 8),
                             ...List.generate(options.length, (index) {
                               final dataOption = options[index];
@@ -177,6 +188,13 @@ class _AdminHomeState extends State<AdminHome> {
                       nextPage(context, const ManageDriver());
                     },
                     child: const Text('Manage Drivers'),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      nextPage(context, const CreateRideTemplate());
+                    },
+                    child: const Text('Create New Ride Template'),
                   ),
                   const SizedBox(height: 30.0),
                   Row(
