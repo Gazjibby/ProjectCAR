@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/ViewModel/book_ride_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +14,6 @@ class BookRide extends StatefulWidget {
 
 class _BookRideState extends State<BookRide> {
   late BookRideViewModel _viewModel;
-
   @override
   void initState() {
     super.initState();
@@ -25,112 +26,131 @@ class _BookRideState extends State<BookRide> {
     return ChangeNotifierProvider<BookRideViewModel>.value(
       value: _viewModel,
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Consumer<BookRideViewModel>(
-            builder: (context, viewModel, child) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FutureBuilder<bool>(
-                      future: viewModel.hasActiveRide(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        }
-                        if (snapshot.hasData && snapshot.data == true) {
-                          return Align(
-                            alignment: Alignment.topCenter,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Material(
-                                elevation: 4,
-                                borderRadius: BorderRadius.circular(12),
-                                color: AppColors.uniPeach,
-                                child: SizedBox(
-                                  width: 370,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          viewModel.rideStatusMessage,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (viewModel.rideStatusMessage ==
-                                                "Confirm Ride Completion") {
-                                              viewModel.confirmcompleteRide();
-                                            } else {
-                                              viewModel.cancelRide();
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                AppColors.uniMaroon,
-                                          ),
-                                          child: Text(
-                                            viewModel.rideStatusMessage ==
-                                                    "Confirm Ride Completion"
-                                                ? 'End Ride'
-                                                : 'Cancel Ride',
-                                            style: TextStyle(
-                                              color: AppColors.uniGold,
+        body: Stack(
+          children: [
+            FlutterMap(
+              options: const MapOptions(
+                initialCenter: LatLng(1.558877361245217, 103.63759771629142),
+                initialZoom: 15.0,
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.app',
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Consumer<BookRideViewModel>(
+                builder: (context, viewModel, child) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FutureBuilder<bool>(
+                          future: viewModel.hasActiveRide(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            if (snapshot.hasData && snapshot.data == true) {
+                              return Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Material(
+                                    elevation: 4,
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: AppColors.uniPeach,
+                                    child: SizedBox(
+                                      width: 370,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              viewModel.rideStatusMessage,
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (viewModel
+                                                        .rideStatusMessage ==
+                                                    "Confirm Ride Completion") {
+                                                  viewModel
+                                                      .confirmcompleteRide();
+                                                } else {
+                                                  viewModel.cancelRide();
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.uniMaroon,
+                                              ),
+                                              child: Text(
+                                                viewModel.rideStatusMessage ==
+                                                        "Confirm Ride Completion"
+                                                    ? 'End Ride'
+                                                    : 'Cancel Ride',
+                                                style: TextStyle(
+                                                  color: AppColors.uniGold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ),
-                    const Spacer(),
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: FloatingActionButton(
-                          onPressed: () async {
-                            bool hasActiveRide =
-                                await viewModel.hasActiveRide();
-                            if (hasActiveRide) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'You already have an active ride. Please complete it before booking a new one.',
                                   ),
                                 ),
                               );
                             } else {
-                              viewModel.showBookingForm(context);
+                              return Container();
                             }
                           },
-                          backgroundColor: AppColors.uniMaroon,
-                          foregroundColor: AppColors.uniGold,
-                          child: const Icon(Icons.directions_car),
                         ),
-                      ),
+                        const Spacer(),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(bottom: 10.0, right: 10.0),
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: FloatingActionButton(
+                              onPressed: () async {
+                                bool hasActiveRide =
+                                    await viewModel.hasActiveRide();
+                                if (hasActiveRide) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'You already have an active ride. Please complete it before booking a new one.',
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  viewModel.showBookingForm(context);
+                                }
+                              },
+                              backgroundColor: AppColors.uniMaroon,
+                              foregroundColor: AppColors.uniGold,
+                              child: const Icon(Icons.directions_car),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
