@@ -22,8 +22,10 @@ class BookRideViewModel extends ChangeNotifier {
   List<DropdownMenuItem<String>> getPickupItems() {
     final rideTemplates =
         Provider.of<RideTemplateProvider>(context, listen: false).rideTemplates;
-    final locations =
-        rideTemplates.map((template) => template.pickup).toSet().toList();
+    final locations = rideTemplates
+        .map((template) => template.pickupPointName)
+        .toSet()
+        .toList();
     return locations
         .map((location) => DropdownMenuItem<String>(
               value: location,
@@ -35,8 +37,10 @@ class BookRideViewModel extends ChangeNotifier {
   List<DropdownMenuItem<String>> getDropOffItems() {
     final rideTemplates =
         Provider.of<RideTemplateProvider>(context, listen: false).rideTemplates;
-    final locations =
-        rideTemplates.map((template) => template.dropoff).toSet().toList();
+    final locations = rideTemplates
+        .map((template) => template.dropoffPointName)
+        .toSet()
+        .toList();
     return locations
         .map((location) => DropdownMenuItem<String>(
               value: location,
