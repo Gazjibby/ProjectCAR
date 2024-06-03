@@ -19,9 +19,12 @@ class RideTemplateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  RideTemplate? getRideTemplate(String pickup, String dropoff) {
+  RideTemplate? getRideTemplate(
+      String pickupPointName, String dropoffPointName) {
     return _rideTemplates.firstWhere(
-      (template) => template.pickup == pickup && template.dropoff == dropoff,
+      (template) =>
+          template.pickupPointName == pickupPointName &&
+          template.dropoffPointName == dropoffPointName,
     );
   }
 }

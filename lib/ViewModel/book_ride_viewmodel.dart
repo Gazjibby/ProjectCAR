@@ -1,13 +1,18 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/ride_template_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
 
 class BookRideViewModel extends ChangeNotifier {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String? selectedPickup;
   String? selectedDropoff;
+  String? pickupLocation;
+  String? dropoffLocation;
   int? price;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -108,6 +113,8 @@ class BookRideViewModel extends ChangeNotifier {
       } else {
         rideStatusMessage = '';
       }
+      pickupLocation = rideRequest['Ride Details']['pickupLocation'];
+      dropoffLocation = rideRequest['Ride Details']['dropoffLocation'];
     } else {
       rideStatusMessage = '';
       activeRideId = null;
@@ -411,4 +418,54 @@ class BookRideViewModel extends ChangeNotifier {
       },
     );
   }
+
+  /* Future<List<LatLng>> drawRoute(
+      String pickupLocation, String dropoffLocation) async {
+    final rideTemplateProvider =
+        Provider.of<RideTemplateProvider>(context, listen: false);
+    final selectedRideTemplate =
+        rideTemplateProvider.getRideTemplate(pickupLocation, dropoffLocation);
+
+    if (selectedRideTemplate == null) {
+      print('Selected ride template is null');
+      return [];
+    }
+
+    final pickupLatitude = selectedRideTemplate.pickupLat;
+    final pickupLongitude = selectedRideTemplate.pickupLng;
+    final dropoffLatitude = selectedRideTemplate.dropoffLat;
+    final dropoffLongitude = selectedRideTemplate.dropoffLng;
+
+    final apiUrl = 'https://router.project-osrm.org/route/v1/driving/'
+        '$pickupLongitude,$pickupLatitude;$dropoffLongitude,$dropoffLatitude?overview=full';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final decodedResponse =
+          json.decode(response.body) as Map<String, dynamic>;
+      final routes = decodedResponse['routes'] as List?;
+      if (routes != null && routes.isNotEmpty) {
+        final geometry = routes[0]['geometry'] as Map<String, dynamic>;
+        final routePoints = geometry['coordinates'] as List?;
+        if (routePoints != null) {
+          final polylinePoints =
+              routePoints.map((point) => LatLng(point[1], point[0])).toList();
+          print(
+              'Route drawn from ($pickupLatitude, $pickupLongitude) to ($dropoffLatitude, $dropoffLongitude)');
+          return polylinePoints;
+        } else {
+          print('Route points not found in the response');
+          return [];
+        }
+      } else {
+        print('Routes not found in the response');
+        return [];
+      }
+    } else {
+      print(
+          'Failed to fetch route from OSRM API. Status code: ${response.statusCode}');
+      return [];
+    }
+  } */
 }

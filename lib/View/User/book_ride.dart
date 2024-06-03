@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:projectcar/Providers/ride_template_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/ViewModel/book_ride_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class BookRide extends StatefulWidget {
   const BookRide({Key? key}) : super(key: key);
@@ -14,11 +17,94 @@ class BookRide extends StatefulWidget {
 
 class _BookRideState extends State<BookRide> {
   late BookRideViewModel _viewModel;
+  List<LatLng> _polyLinePoints = [];
+  LatLng? _pickupLocation;
+  LatLng? _dropoffLocation;
+
   @override
   void initState() {
     super.initState();
     _viewModel = BookRideViewModel(context);
-    _viewModel.fetchRideStatus();
+    _fetchRideStatusAndLoadRoute();
+  }
+
+  Future<void> _fetchRideStatusAndLoadRoute() async {
+    await _viewModel.fetchRideStatus();
+    _loadRoute();
+    _setMarkerLocations();
+  }
+
+  Future<void> _loadRoute() async {
+    final pickupLocation = _viewModel.pickupLocation;
+    final dropoffLocation = _viewModel.dropoffLocation;
+
+    final rideTemplateProvider =
+        Provider.of<RideTemplateProvider>(context, listen: false);
+    final selectedRideTemplate =
+        rideTemplateProvider.getRideTemplate(pickupLocation!, dropoffLocation!);
+
+    final pickupLatitude = selectedRideTemplate?.pickupLat;
+    final pickupLongitude = selectedRideTemplate?.pickupLng;
+    final dropoffLatitude = selectedRideTemplate?.dropoffLat;
+    final dropoffLongitude = selectedRideTemplate?.dropoffLng;
+
+    final url =
+        'http://router.project-osrm.org/route/v1/driving/$pickupLongitude,$pickupLatitude;$dropoffLongitude,$dropoffLatitude?overview=full&geometries=geojson';
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
+      final routes = jsonResponse['routes'] as List?;
+      if (routes != null && routes.isNotEmpty) {
+        final routePoints = routes[0]['geometry']['coordinates'] as List?;
+        if (routePoints != null) {
+          setState(() {
+            _polyLinePoints = routePoints
+                .map((point) => LatLng(point[1] as double, point[0] as double))
+                .toList();
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Route points not found')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Routes not found')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to fetch route')),
+      );
+    }
+  }
+
+  void _setMarkerLocations() {
+    final pickupLocation = _viewModel.pickupLocation;
+    final dropoffLocation = _viewModel.dropoffLocation;
+
+    final rideTemplateProvider =
+        Provider.of<RideTemplateProvider>(context, listen: false);
+    final selectedRideTemplate =
+        rideTemplateProvider.getRideTemplate(pickupLocation!, dropoffLocation!);
+
+    if (selectedRideTemplate != null) {
+      final pickupLatitude = selectedRideTemplate.pickupLat;
+      final pickupLongitude = selectedRideTemplate.pickupLng;
+      final dropoffLatitude = selectedRideTemplate.dropoffLat;
+      final dropoffLongitude = selectedRideTemplate.dropoffLng;
+
+      double convertpickupLatitude = pickupLatitude.clamp(-90.0, 90.0);
+      double convertpickupLongitude = pickupLongitude.clamp(-180.0, 180.0);
+      double convertdropoffLatitude = dropoffLatitude.clamp(-90.0, 90.0);
+      double convertdropoffLongitude = dropoffLongitude.clamp(-180.0, 180.0);
+
+      _pickupLocation = LatLng(convertpickupLatitude, convertpickupLongitude);
+      _dropoffLocation =
+          LatLng(convertdropoffLatitude, convertdropoffLongitude);
+    } else {}
   }
 
   @override
@@ -37,6 +123,39 @@ class _BookRideState extends State<BookRide> {
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
+                ),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: _pickupLocation!,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.green,
+                        size: 40,
+                      ),
+                    ),
+                    Marker(
+                      width: 40,
+                      height: 40,
+                      point: _dropoffLocation!,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.red,
+                        size: 40,
+                      ),
+                    )
+                  ],
+                ),
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: _polyLinePoints,
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                  ],
                 ),
               ],
             ),

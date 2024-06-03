@@ -7,14 +7,15 @@ class RideTemplate {
   final double dropoffLng;
   final int price;
 
-  RideTemplate(
-      {required this.pickupPointName,
-      required this.pickupLat,
-      required this.pickupLng,
-      required this.dropoffPointName,
-      required this.dropoffLat,
-      required this.dropoffLng,
-      required this.price});
+  RideTemplate({
+    required this.pickupPointName,
+    required this.pickupLat,
+    required this.pickupLng,
+    required this.dropoffPointName,
+    required this.dropoffLat,
+    required this.dropoffLng,
+    required this.price,
+  });
 
   factory RideTemplate.fromMap(Map<String, dynamic> data) {
     return RideTemplate(
