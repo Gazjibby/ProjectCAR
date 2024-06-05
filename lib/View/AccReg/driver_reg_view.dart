@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:projectcar/View/login_view.dart';
 import 'package:projectcar/ViewModel/driver_reg_viewmodel.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:projectcar/View/AccReg/driver_reg_photo.dart';
 
 class DriverRegView extends StatefulWidget {
   DriverRegView({Key? key}) : super(key: key);
@@ -21,7 +20,6 @@ class _DriverRegViewState extends State<DriverRegView> {
   final TextEditingController _telephoneNumberController =
       TextEditingController();
   String _selectedCollege = '';
-  String? _photoUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -94,69 +92,36 @@ class _DriverRegViewState extends State<DriverRegView> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () async {
-                final ImagePicker picker = ImagePicker();
-                final XFile? image =
-                    await picker.pickImage(source: ImageSource.gallery);
-
-                if (image != null) {
-                  String? photoUrl = await widget._viewModel.uploadPhoto(
-                    image.path,
-                    _matricStaffNumberController.text,
+                if (_matricStaffNumberController.text.isNotEmpty) {
+                  await widget._viewModel.saveTempData(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    fullName: _fullNameController.text,
+                    matricStaffNumber: _matricStaffNumberController.text,
+                    icNumber: _icNumberController.text,
+                    telephoneNumber: _telephoneNumberController.text,
+                    college: _selectedCollege,
                   );
 
-                  if (photoUrl != null) {
-                    setState(() {
-                      _photoUrl = photoUrl;
-                    });
-                    print('Photo uploaded successfully. URL: $photoUrl');
-                  } else {
-                    print('Failed to upload photo.');
-                  }
-                }
-              },
-              child: const Text('Upload Photo'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  if (_photoUrl != null &&
-                      _matricStaffNumberController.text.isNotEmpty) {
-                    await widget._viewModel.saveTempData(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                      fullName: _fullNameController.text,
-                      matricStaffNumber: _matricStaffNumberController.text,
-                      icNumber: _icNumberController.text,
-                      telephoneNumber: _telephoneNumberController.text,
-                      college: _selectedCollege,
-                    );
-
-                    await widget._viewModel.registerDriver(
-                      photoUrl: _photoUrl!,
-                    );
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginView()),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Please enter a matric/staff number and upload a photo.'),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DriverRegPhotoView(
+                        viewModel: widget._viewModel,
+                        matricStaffNumber: _matricStaffNumberController.text,
                       ),
-                    );
-                  }
-                } catch (e) {
-                  print('Error registering: $e');
+                    ),
+                  );
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Registration failed. Please try again.'),
+                      content: Text(
+                          'Please enter a matric/staff number before proceeding.'),
                     ),
                   );
                 }
               },
-              child: const Text('Register'),
+              child: const Text('Next'),
             ),
           ],
         ),

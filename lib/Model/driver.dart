@@ -10,6 +10,10 @@ class DriverModel {
   final String photoUrl;
   final String status;
   final String voteFlag;
+  final String carBrand;
+  final String carModel;
+  final String carColor;
+  final String carPlate;
 
   DriverModel({
     required this.email,
@@ -21,6 +25,10 @@ class DriverModel {
     required this.photoUrl,
     required this.status,
     required this.voteFlag,
+    required this.carBrand,
+    required this.carModel,
+    required this.carColor,
+    required this.carPlate,
   });
 }
 

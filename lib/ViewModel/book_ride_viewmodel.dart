@@ -223,6 +223,100 @@ class BookRideViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> showRatingDialog() async {
+    int rating = 3;
+    TextEditingController commentController = TextEditingController();
+
+    print('something: $activeRideId');
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: const Text('Rate the Driver'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Please rate the driver:'),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < rating ? Icons.star : Icons.star_border,
+                        ),
+                        color: Colors.amber,
+                        onPressed: () {
+                          setState(() {
+                            rating = index + 1;
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: commentController,
+                    decoration: const InputDecoration(
+                      labelText: 'Comments',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ElevatedButton(
+                  child: const Text('Submit'),
+                  onPressed: () async {
+                    if (activeRideId != null) {
+                      final rideDetails = await FirebaseFirestore.instance
+                          .collection('Ride Request')
+                          .doc(activeRideId)
+                          .get();
+
+                      String driverName = rideDetails['DriverAccepted'];
+                      String comment = commentController.text.trim().isEmpty
+                          ? ''
+                          : commentController.text.trim();
+
+                      await FirebaseFirestore.instance
+                          .collection('Ride Request')
+                          .doc(activeRideId)
+                          .update({'DriverRating': rating});
+
+                      await FirebaseFirestore.instance
+                          .collection('Driver Ratings')
+                          .add({
+                        'rideReqID': activeRideId,
+                        'driverMatricStaffNumber': driverName,
+                        'rating': rating,
+                        'comments': comment,
+                        'timestamp': FieldValue.serverTimestamp(),
+                      });
+
+                      await confirmcompleteRide();
+                    }
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void showConfirmation(BuildContext context) {
     showDialog(
       context: context,

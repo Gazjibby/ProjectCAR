@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/admin.dart';
 import 'package:projectcar/View/Home/admin_home.dart';
@@ -28,6 +26,13 @@ class LoginView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // Add the logo image
+            Image.asset(
+              'lib/Asset/images/Logo.png',
+              width: 200.0,
+              height: 200.0,
+            ),
+            const SizedBox(height: 32.0),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -51,27 +56,31 @@ class LoginView extends StatelessWidget {
                   password: _passwordController.text,
                 );
 
-                if (user is UserModel) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserHome(user: user),
-                    ),
-                  );
-                } else if (user is DriverModel) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DriverHome(driver: user),
-                    ),
-                  );
-                } else if (user is AdminModel) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AdminHome(admin: user),
-                    ),
-                  );
+                if (user != null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (user is UserModel) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserHome(user: user),
+                        ),
+                      );
+                    } else if (user is DriverModel) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DriverHome(driver: user),
+                        ),
+                      );
+                    } else if (user is AdminModel) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdminHome(admin: user),
+                        ),
+                      );
+                    }
+                  });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -85,10 +94,12 @@ class LoginView extends StatelessWidget {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegOptView()),
-                );
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegOptView()),
+                  );
+                });
               },
               child: const Text('Sign Up'),
             ),

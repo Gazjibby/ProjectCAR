@@ -47,6 +47,10 @@ class DriverRegViewModel {
 
   Future<void> registerDriver({
     required String photoUrl,
+    required String carBrand,
+    required String carModel,
+    required String carColor,
+    required String plateNumber,
   }) async {
     try {
       UserCredential userCredential =
@@ -63,12 +67,17 @@ class DriverRegViewModel {
         'icNumber': icNumber,
         'telephoneNumber': telephoneNumber,
         'college': college,
-        'photoUrl': photoUrl,
+        'Car Details': {
+          'photoUrl': photoUrl,
+          'plateNumber': plateNumber,
+          'carBrand': carBrand,
+          'carModel': carModel,
+          'carColor': carColor,
+        },
         'status': 'pending',
-        'voteFlag': '0'
       });
     } catch (e) {
-      print('Error registering $e');
+      print('Error registering: $e');
       throw Exception('Registration failed');
     }
   }

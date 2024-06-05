@@ -7,6 +7,7 @@ import 'package:projectcar/ViewModel/book_ride_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 
 class BookRide extends StatefulWidget {
   const BookRide({Key? key}) : super(key: key);
@@ -30,8 +31,10 @@ class _BookRideState extends State<BookRide> {
 
   Future<void> _fetchRideStatusAndLoadRoute() async {
     await _viewModel.fetchRideStatus();
-    _loadRoute();
-    _setMarkerLocations();
+    if (_viewModel.activeRideId != null) {
+      _loadRoute();
+      _setMarkerLocations();
+    }
   }
 
   Future<void> _loadRoute() async {
@@ -47,6 +50,16 @@ class _BookRideState extends State<BookRide> {
     final pickupLongitude = selectedRideTemplate?.pickupLng;
     final dropoffLatitude = selectedRideTemplate?.dropoffLat;
     final dropoffLongitude = selectedRideTemplate?.dropoffLng;
+
+    if (pickupLatitude == null ||
+        pickupLongitude == null ||
+        dropoffLatitude == null ||
+        dropoffLongitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load ride template locations')),
+      );
+      return;
+    }
 
     final url =
         'http://router.project-osrm.org/route/v1/driving/$pickupLongitude,$pickupLatitude;$dropoffLongitude,$dropoffLatitude?overview=full&geometries=geojson';
@@ -101,10 +114,12 @@ class _BookRideState extends State<BookRide> {
       double convertdropoffLatitude = dropoffLatitude.clamp(-90.0, 90.0);
       double convertdropoffLongitude = dropoffLongitude.clamp(-180.0, 180.0);
 
-      _pickupLocation = LatLng(convertpickupLatitude, convertpickupLongitude);
-      _dropoffLocation =
-          LatLng(convertdropoffLatitude, convertdropoffLongitude);
-    } else {}
+      setState(() {
+        _pickupLocation = LatLng(convertpickupLatitude, convertpickupLongitude);
+        _dropoffLocation =
+            LatLng(convertdropoffLatitude, convertdropoffLongitude);
+      });
+    }
   }
 
   @override
@@ -124,30 +139,45 @@ class _BookRideState extends State<BookRide> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
                 ),
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      width: 40,
-                      height: 40,
-                      point: _pickupLocation!,
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.green,
-                        size: 40,
+                CurrentLocationLayer(
+                  alignPositionOnUpdate: AlignOnUpdate.always,
+                  alignDirectionOnUpdate: AlignOnUpdate.never,
+                  style: const LocationMarkerStyle(
+                    marker: DefaultLocationMarker(
+                      child: Icon(
+                        Icons.person,
+                        color: Color.fromARGB(255, 248, 166, 23),
                       ),
                     ),
-                    Marker(
-                      width: 40,
-                      height: 40,
-                      point: _dropoffLocation!,
-                      child: const Icon(
-                        Icons.location_on,
-                        color: Colors.red,
-                        size: 40,
-                      ),
-                    )
-                  ],
+                    markerSize: Size(20, 20),
+                    markerDirection: MarkerDirection.heading,
+                  ),
                 ),
+                if (_pickupLocation != null && _dropoffLocation != null)
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        width: 40,
+                        height: 40,
+                        point: _pickupLocation!,
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.green,
+                          size: 40,
+                        ),
+                      ),
+                      Marker(
+                        width: 40,
+                        height: 40,
+                        point: _dropoffLocation!,
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 40,
+                        ),
+                      )
+                    ],
+                  ),
                 PolylineLayer(
                   polylines: [
                     Polyline(
@@ -203,8 +233,7 @@ class _BookRideState extends State<BookRide> {
                                                 if (viewModel
                                                         .rideStatusMessage ==
                                                     "Confirm Ride Completion") {
-                                                  viewModel
-                                                      .confirmcompleteRide();
+                                                  viewModel.showRatingDialog();
                                                 } else {
                                                   viewModel.cancelRide();
                                                 }

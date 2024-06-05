@@ -72,9 +72,13 @@ class LoginViewModel {
             icNumber: driverDoc.data()?['icNumber'] ?? '',
             telephoneNumber: driverDoc.data()?['telephoneNumber'] ?? '',
             college: driverDoc.data()?['college'] ?? '',
-            photoUrl: driverDoc.data()?['photoUrl'] ?? '',
+            photoUrl: driverDoc.data()?['Car Details']['photoUrl'] ?? '',
             status: driverDoc.data()?['status'] ?? '',
-            voteFlag: driverDoc.data()?['voteFlag'] ?? '',
+            voteFlag: driverDoc.data()?['Car Details']['voteFlag'] ?? '',
+            carBrand: driverDoc.data()?['Car Details']['carBrand'],
+            carModel: driverDoc.data()?['Car Details']['carModel'],
+            carColor: driverDoc.data()?['Car Details']['carColor'],
+            carPlate: driverDoc.data()?['Car Details']['plateNumber'],
           );
 
           Provider.of<DriverProvider>(context, listen: false)

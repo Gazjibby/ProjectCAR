@@ -16,6 +16,8 @@ class RideProvider with ChangeNotifier {
           .get();
 
       _rideRequests = querySnapshot.docs
+          .where((doc) =>
+              doc['Status'] != 'Completed' && doc['Status'] != 'Cancelled')
           .map((doc) => RideRequest(
                 rideReqID: doc.id,
                 userRequest: doc['UserRequest'],

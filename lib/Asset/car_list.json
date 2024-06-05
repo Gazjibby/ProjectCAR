@@ -1,0 +1,152 @@
+[
+    {
+        "brand": "Proton",
+        "models": [
+            "Saga",
+            "Persona",
+            "Iriz",
+            "X70",
+            "X50",
+            "X90",
+            "Wira",
+            "Perdana",
+            "Satria",
+            "Waja",
+            "Gen-2"
+        ]
+    },
+    {
+        "brand": "Perodua",
+        "models": [
+            "Axia",
+            "Myvi",
+            "Bezza",
+            "Alza",
+            "Ativa",
+            "Kancil",
+            "Kelisa",
+            "Viva",
+            "Rusa"
+        ]
+    },
+    {
+        "brand": "Toyota",
+        "models": [
+            "Vios",
+            "Yaris",
+            "Corolla Altis",
+            "Camry",
+            "Hilux",
+            "GR 86",
+            "Corona",
+            "Cressida",
+            "Caldina",
+            "Starlet"
+        ]
+    },
+    {
+        "brand": "Honda",
+        "models": [
+            "City",
+            "Civic",
+            "Accord",
+            "CR-V",
+            "HR-V",
+            "ZR-V",
+            "Prelude",
+            "Stream",
+            "FR-V",
+            "Element"
+        ]
+    },
+    {
+        "brand": "Nissan",
+        "models": [
+            "Almera",
+            "X-Trail",
+            "Navara",
+            "Serena",
+            "Leaf",
+            "Ariya",
+            "Sunny",
+            "Bluebird",
+            "Primera",
+            "Sylphy"
+        ]
+    },
+    {
+        "brand": "Mazda",
+        "models": [
+            "Mazda2",
+            "Mazda3",
+            "CX-3",
+            "CX-5",
+            "CX-8",
+            "CX-30",
+            "323",
+            "626",
+            "RX-7",
+            "RX-8"
+        ]
+    },
+    {
+        "brand": "BMW",
+        "models": [
+            "3 Series",
+            "5 Series",
+            "X1",
+            "X3",
+            "X5",
+            "iX3",
+            "2002",
+            "E21",
+            "E30",
+            "E36"
+        ]
+    },
+    {
+        "brand": "Mercedes-Benz",
+        "models": [
+            "A-Class",
+            "C-Class",
+            "E-Class",
+            "GLA",
+            "GLE",
+            "EQC",
+            "190E",
+            "W123",
+            "W124",
+            "W140"
+        ]
+    },
+    {
+        "brand": "Hyundai",
+        "models": [
+            "Kona",
+            "Santa Fe",
+            "Elantra",
+            "Ioniq",
+            "Tucson",
+            "Ioniq 5",
+            "Accent",
+            "Getz",
+            "Matrix",
+            "Terracan"
+        ]
+    },
+    {
+        "brand": "Kia",
+        "models": [
+            "Picanto",
+            "Rio",
+            "Cerato",
+            "Sportage",
+            "Sorento",
+            "Seltos",
+            "Sephia",
+            "Spectra",
+            "Carens",
+            "Opirus"
+        ]
+    }
+]

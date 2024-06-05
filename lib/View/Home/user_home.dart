@@ -35,6 +35,15 @@ class _UserHomeState extends State<UserHome> {
                 );
               },
             ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UserLogout()),
+                );
+              },
+            ),
           ],
         ),
         body: _pages[bottomNav.currentIndex],
@@ -60,6 +69,7 @@ class _UserHomeState extends State<UserHome> {
   final List<BottomNavigationBarItem> _items = const [
     BottomNavigationBarItem(
         icon: Icon(Icons.bookmark_add_outlined), label: "Book Ride"),
-    BottomNavigationBarItem(icon: Icon(Icons.logout), label: "Log Out"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.delivery_dining), label: "Coming Soon"),
   ];
 }
