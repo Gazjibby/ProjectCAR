@@ -146,15 +146,17 @@ class _BookRideState extends State<BookRide> {
                     marker: DefaultLocationMarker(
                       child: Icon(
                         Icons.person,
+                        size: 10.0,
                         color: Color.fromARGB(255, 248, 166, 23),
                       ),
                     ),
-                    markerSize: Size(20, 20),
+                    markerSize: Size(10, 10),
                     markerDirection: MarkerDirection.heading,
                   ),
                 ),
                 if (_pickupLocation != null && _dropoffLocation != null)
                   MarkerLayer(
+                    key: UniqueKey(),
                     markers: [
                       Marker(
                         width: 40,
@@ -179,6 +181,7 @@ class _BookRideState extends State<BookRide> {
                     ],
                   ),
                 PolylineLayer(
+                  key: UniqueKey(),
                   polylines: [
                     Polyline(
                       points: _polyLinePoints,
@@ -234,6 +237,10 @@ class _BookRideState extends State<BookRide> {
                                                         .rideStatusMessage ==
                                                     "Confirm Ride Completion") {
                                                   viewModel.showRatingDialog();
+                                                  _pickupLocation = null;
+                                                  _dropoffLocation = null;
+                                                  _polyLinePoints =
+                                                      List.empty();
                                                 } else {
                                                   viewModel.cancelRide();
                                                 }
@@ -270,25 +277,38 @@ class _BookRideState extends State<BookRide> {
                               const EdgeInsets.only(bottom: 10.0, right: 10.0),
                           child: Align(
                             alignment: Alignment.bottomRight,
-                            child: FloatingActionButton(
-                              onPressed: () async {
-                                bool hasActiveRide =
-                                    await viewModel.hasActiveRide();
-                                if (hasActiveRide) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'You already have an active ride. Please complete it before booking a new one.',
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  viewModel.showBookingForm(context);
-                                }
-                              },
-                              backgroundColor: AppColors.uniMaroon,
-                              foregroundColor: AppColors.uniGold,
-                              child: const Icon(Icons.directions_car),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                FloatingActionButton(
+                                  onPressed: () {},
+                                  backgroundColor: AppColors.uniMaroon,
+                                  foregroundColor: AppColors.uniGold,
+                                  child: const Icon(Icons.info),
+                                ),
+                                const SizedBox(height: 8),
+                                FloatingActionButton(
+                                  onPressed: () async {
+                                    bool hasActiveRide =
+                                        await viewModel.hasActiveRide();
+                                    if (hasActiveRide) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'You already have an active ride. Please complete it before booking a new one.',
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      viewModel.showBookingForm(context);
+                                    }
+                                  },
+                                  backgroundColor: AppColors.uniMaroon,
+                                  foregroundColor: AppColors.uniGold,
+                                  child: const Icon(Icons.directions_car),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -102,4 +102,42 @@ class ActiveRideProvider with ChangeNotifier {
       }
     }
   }
+
+  Future<void> cancelRide() async {
+    String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
+    if (_activeRide != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('Ride Request')
+            .doc(_activeRide!.rideID)
+            .update({'Status': 'Cancelled By Driver'});
+
+        final rideLogQuerySnapshot = await FirebaseFirestore.instance
+            .collection('Ride Log')
+            .where('rideReqID', isEqualTo: _activeRide!.rideID)
+            .get();
+
+        for (var doc in rideLogQuerySnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection('Ride Log')
+              .doc(doc.id)
+              .update({
+            'StatusHistory': FieldValue.arrayUnion([
+              {
+                'Status': 'Driver Cancel Ride Request',
+                'UpTime': formattedTimestamp,
+              }
+            ])
+          });
+        }
+
+        await fetchActiveRide(_activeRide!.driverAccepted);
+
+        notifyListeners();
+      } catch (e) {
+        print('Failed to complete ride: $e');
+      }
+    }
+  }
 }

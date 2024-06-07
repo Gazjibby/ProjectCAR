@@ -14,22 +14,23 @@ class DriverModel {
   final String carModel;
   final String carColor;
   final String carPlate;
+  final String driverTokenFCM;
 
-  DriverModel({
-    required this.email,
-    required this.fullName,
-    required this.matricStaffNumber,
-    required this.icNumber,
-    required this.telephoneNumber,
-    required this.college,
-    required this.photoUrl,
-    required this.status,
-    required this.voteFlag,
-    required this.carBrand,
-    required this.carModel,
-    required this.carColor,
-    required this.carPlate,
-  });
+  DriverModel(
+      {required this.email,
+      required this.fullName,
+      required this.matricStaffNumber,
+      required this.icNumber,
+      required this.telephoneNumber,
+      required this.college,
+      required this.photoUrl,
+      required this.status,
+      required this.voteFlag,
+      required this.carBrand,
+      required this.carModel,
+      required this.carColor,
+      required this.carPlate,
+      required this.driverTokenFCM});
 }
 
 class DriverProvider with ChangeNotifier {

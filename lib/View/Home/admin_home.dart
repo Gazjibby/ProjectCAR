@@ -229,69 +229,142 @@ class ButtonRow extends StatelessWidget {
 }
 
 class StatisticsSection extends StatelessWidget {
+  const StatisticsSection({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          child: Container(
-            color: Colors.grey[200],
-            padding: const EdgeInsets.all(8.0),
-            child: FutureBuilder<int>(
-              future: context
-                  .watch<AdminHomeViewModel>()
-                  .getDriverApplicantsCount(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                return Text(
-                  'Number of Driver Applicants:\n${snapshot.data}',
-                  textAlign: TextAlign.center,
-                );
-              },
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future: context
+                      .watch<AdminHomeViewModel>()
+                      .getDriverApplicantsCount(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Driver Applicants:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future: context
+                      .watch<AdminHomeViewModel>()
+                      .getActiveDriversCount(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Active Drivers:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future: context.watch<AdminHomeViewModel>().getUsersCount(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Users:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 10.0),
-        Expanded(
-          child: Container(
-            color: Colors.grey[200],
-            padding: const EdgeInsets.all(8.0),
-            child: FutureBuilder<int>(
-              future:
-                  context.watch<AdminHomeViewModel>().getActiveDriversCount(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                return Text(
-                  'Number of Active Drivers:\n${snapshot.data}',
-                  textAlign: TextAlign.center,
-                );
-              },
+        const SizedBox(height: 10.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future:
+                      context.watch<AdminHomeViewModel>().getPostedRideReq(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Posted Ride Requests:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 10.0),
-        Expanded(
-          child: Container(
-            color: Colors.grey[200],
-            padding: const EdgeInsets.all(8.0),
-            child: FutureBuilder<int>(
-              future: context.watch<AdminHomeViewModel>().getUsersCount(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                return Text(
-                  'Number of Users:\n${snapshot.data}',
-                  textAlign: TextAlign.center,
-                );
-              },
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future:
+                      context.watch<AdminHomeViewModel>().getOngoingRideReq(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Ongoing Ride Requests:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future:
+                      context.watch<AdminHomeViewModel>().getCompleteRideReq(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Completed Ride Requests:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

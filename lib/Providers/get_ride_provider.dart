@@ -46,7 +46,8 @@ class RideProvider with ChangeNotifier {
       QuerySnapshot querySnapshot = await firestore
           .collection('Ride Request')
           .where('DriverAccepted', isEqualTo: driverMatricStaffNumber)
-          .where('Status', whereIn: ['Posted', 'Ongoing', 'Accepted']).get();
+          .where('Status',
+              whereIn: ['Posted', 'Ongoing', 'Accepted', 'Active']).get();
 
       List<DocumentSnapshot> documents = querySnapshot.docs;
       if (documents.isNotEmpty) {

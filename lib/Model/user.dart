@@ -7,15 +7,16 @@ class UserModel {
   final String icNumber;
   final String telephoneNumber;
   final String college;
+  final String userTokenFCM;
 
-  UserModel({
-    required this.email,
-    required this.fullName,
-    required this.matricStaffNumber,
-    required this.icNumber,
-    required this.telephoneNumber,
-    required this.college,
-  });
+  UserModel(
+      {required this.email,
+      required this.fullName,
+      required this.matricStaffNumber,
+      required this.icNumber,
+      required this.telephoneNumber,
+      required this.college,
+      required this.userTokenFCM});
 }
 
 class UserProvider with ChangeNotifier {

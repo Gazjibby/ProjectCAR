@@ -3,6 +3,7 @@ import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Model/ride_request.dart';
 import 'package:projectcar/Providers/get_ride_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
+import 'package:projectcar/notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -116,7 +117,6 @@ class _RideReqState extends State<RideReq> {
           .hasOngoingRide(context, driverMatricStaffNumber);
 
       if (ongoingRide) {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -150,13 +150,36 @@ class _RideReqState extends State<RideReq> {
               }
             ])
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Ride request accepted successfully.'),
-            ),
-          );
         }
+
+        final userQuerySnapshot = await FirebaseFirestore.instance
+            .collection('drivers')
+            .where('matricStaffNumber', isEqualTo: driverMatricStaffNumber)
+            .limit(1)
+            .get();
+
+        if (userQuerySnapshot.docs.isNotEmpty) {
+          final userDoc = userQuerySnapshot.docs.first;
+          final String? userToken = userDoc['driverTokenFCM'];
+
+          if (userToken != null) {
+            final notificationService = NotificationService();
+            await notificationService.sendNotification(
+                userToken,
+                'Ride Accepted',
+                'Your ride request has been accepted by a driver.');
+          }
+        } else {
+          print('User with matricStaffNumber not found.');
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ride request accepted successfully.'),
+          ),
+        );
       }
+    } else {
       print('Driver information not available.');
     }
   }
@@ -165,7 +188,7 @@ class _RideReqState extends State<RideReq> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        _dialogContext = context; // Store the dialog context
+        _dialogContext = context;
         return AlertDialog(
           title: const Text('Accept Booking?'),
           content: Text(

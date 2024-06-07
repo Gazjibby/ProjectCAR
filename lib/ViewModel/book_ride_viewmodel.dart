@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/ride_template_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
 
 class BookRideViewModel extends ChangeNotifier {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -94,7 +91,12 @@ class BookRideViewModel extends ChangeNotifier {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Ride Request')
         .where('UserRequest', isEqualTo: userMatricStaffNumber)
-        .where('Status', whereNotIn: ['Completed', 'Cancelled'])
+        .where('Status', whereNotIn: [
+          'Completed',
+          'Cancelled',
+          'Cancelled By User',
+          'Cancelled By Driver'
+        ])
         .limit(1)
         .get();
 
@@ -127,8 +129,28 @@ class BookRideViewModel extends ChangeNotifier {
       await FirebaseFirestore.instance
           .collection('Ride Request')
           .doc(activeRideId)
-          .update({'Status': 'Cancelled'});
+          .update({'Status': 'Cancelled By User'});
 
+      QuerySnapshot rideLogQuerySnapshot = await FirebaseFirestore.instance
+          .collection('Ride Log')
+          .where('rideReqID', isEqualTo: activeRideId)
+          .get();
+
+      String formattedTimestamp = DateTime.now().toIso8601String();
+
+      for (var doc in rideLogQuerySnapshot.docs) {
+        await FirebaseFirestore.instance
+            .collection('Ride Log')
+            .doc(doc.id)
+            .update({
+          'StatusHistory': FieldValue.arrayUnion([
+            {
+              'Status': 'User Cancel Ride Request',
+              'UpTime': formattedTimestamp,
+            }
+          ])
+        });
+      }
       rideStatusMessage = '';
       activeRideId = null;
       notifyListeners();

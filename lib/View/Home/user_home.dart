@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projectcar/Providers/logout_provider.dart';
 import 'package:projectcar/Providers/top_nav_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/View/User/book_ride.dart';
@@ -18,8 +19,8 @@ class UserHome extends StatefulWidget {
 class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
-    return Consumer2<BottomNavProvider, TopNavProvider>(
-        builder: (context, bottomNav, topNav, child) {
+    return Consumer3<BottomNavProvider, TopNavProvider, LogoutProvider>(
+        builder: (context, bottomNav, topNav, logoutProvider, child) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('PREBET UTM'),
@@ -38,10 +39,7 @@ class _UserHomeState extends State<UserHome> {
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const UserLogout()),
-                );
+                logoutProvider.logout(context);
               },
             ),
           ],

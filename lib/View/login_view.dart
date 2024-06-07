@@ -21,43 +21,42 @@ class LoginView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Add the logo image
-            Image.asset(
-              'lib/Asset/images/Logo.png',
-              width: 200.0,
-              height: 200.0,
-            ),
-            const SizedBox(height: 32.0),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(
+                'lib/Asset/images/Logo.png',
+                width: 200.0,
+                height: 200.0,
               ),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
+              const SizedBox(height: 32.0),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                ),
               ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                final user = await viewModel.loginUser(
-                  context: context,
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                );
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () async {
+                  final user = await viewModel.loginUser(
+                    context: context,
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  );
 
-                if (user != null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (user != null) {
                     if (user is UserModel) {
                       Navigator.pushReplacement(
                         context,
@@ -80,30 +79,28 @@ class LoginView extends StatelessWidget {
                         ),
                       );
                     }
-                  });
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Login failed. Please try again.'),
-                    ),
-                  );
-                }
-              },
-              child: const Text('Login'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Login failed. Please try again.'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Login'),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const RegOptView()),
                   );
-                });
-              },
-              child: const Text('Sign Up'),
-            ),
-          ],
+                },
+                child: const Text('Sign Up'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,14 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:projectcar/Model/admin.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Model/driver.dart';
-import 'package:projectcar/Model/admin.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class LoginViewModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<dynamic> loginUser({
     required BuildContext context,
@@ -16,6 +18,7 @@ class LoginViewModel {
     required String password,
   }) async {
     try {
+      // Check for admin login
       QuerySnapshot<Map<String, dynamic>> adminQuerySnapshot = await _firestore
           .collection('Admin')
           .where('Username', isEqualTo: email)
@@ -35,10 +38,13 @@ class LoginViewModel {
         return adminModel;
       }
 
+      // Check for regular user or driver login
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      String? fcmToken = await _firebaseMessaging.getToken();
 
       DocumentSnapshot<Map<String, dynamic>> userDoc = await _firestore
           .collection('users')
@@ -53,9 +59,13 @@ class LoginViewModel {
           icNumber: userDoc.data()?['ICNO'] ?? '',
           telephoneNumber: userDoc.data()?['telNo'] ?? '',
           college: userDoc.data()?['collegeAddress'] ?? '',
+          userTokenFCM: userDoc.data()?['userTokenFCM'] ?? '',
         );
 
         Provider.of<UserProvider>(context, listen: false).setUser(userModel);
+
+        await _updateTokenFCM(userCredential.user!.uid, fcmToken,
+            isDriver: false);
 
         return userModel;
       } else {
@@ -79,10 +89,14 @@ class LoginViewModel {
             carModel: driverDoc.data()?['Car Details']['carModel'],
             carColor: driverDoc.data()?['Car Details']['carColor'],
             carPlate: driverDoc.data()?['Car Details']['plateNumber'],
+            driverTokenFCM: driverDoc.data()?['driverTokenFCM'] ?? '',
           );
 
           Provider.of<DriverProvider>(context, listen: false)
               .setDriver(driverModel);
+
+          await _updateTokenFCM(userCredential.user!.uid, fcmToken,
+              isDriver: true);
 
           return driverModel;
         } else {
@@ -93,5 +107,27 @@ class LoginViewModel {
       print('Error logging in user: $e');
       return null;
     }
+  }
+
+  Future<void> _updateTokenFCM(String userId, String? fcmToken,
+      {required bool isDriver}) async {
+    if (fcmToken != null) {
+      String collection = isDriver ? 'drivers' : 'users';
+      String tokenField = isDriver ? 'driverTokenFCM' : 'userTokenFCM';
+      await _firestore
+          .collection(collection)
+          .doc(userId)
+          .update({tokenField: fcmToken});
+    }
+  }
+
+  void initTokenRefreshListener() {
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      String? userId = FirebaseAuth.instance.currentUser?.uid;
+      bool isDriver = true;
+      if (userId != null) {
+        _updateTokenFCM(userId, newToken, isDriver: isDriver);
+      }
+    });
   }
 }
