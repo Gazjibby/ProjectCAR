@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:projectcar/View/login_view.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/firebase_options.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
@@ -62,7 +63,7 @@ class MyApp extends StatelessWidget {
             displaySmall: GoogleFonts.oswald(),
           ),
         ),
-        home: const SplashScreen(),
+        home: LoginView(),
       ),
     );
   }
