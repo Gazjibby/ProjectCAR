@@ -156,7 +156,7 @@ class _RideReqState extends State<RideReq> {
         final userQuerySnapshot = await FirebaseFirestore.instance
             .collection('users')
             .where(
-              'matricStaffNumber',
+              'MatricStaffNo',
               isEqualTo: rideRequest.userRequest,
             ) // This is User/Rider Matric Number
             .limit(1)
