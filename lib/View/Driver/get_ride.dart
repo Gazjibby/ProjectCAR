@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class RideReq extends StatefulWidget {
-  const RideReq({Key? key}) : super(key: key);
+  const RideReq({super.key});
 
   @override
   State<RideReq> createState() => _RideReqState();
@@ -152,15 +152,19 @@ class _RideReqState extends State<RideReq> {
           });
         }
 
+        // Get User Token
         final userQuerySnapshot = await FirebaseFirestore.instance
-            .collection('drivers')
-            .where('matricStaffNumber', isEqualTo: driverMatricStaffNumber)
+            .collection('users')
+            .where(
+              'matricStaffNumber',
+              isEqualTo: rideRequest.userRequest,
+            ) // This is User/Rider Matric Number
             .limit(1)
             .get();
 
         if (userQuerySnapshot.docs.isNotEmpty) {
           final userDoc = userQuerySnapshot.docs.first;
-          final String? userToken = userDoc['driverTokenFCM'];
+          final String? userToken = userDoc['userTokenFCM'];
 
           if (userToken != null) {
             final notificationService = NotificationService();
