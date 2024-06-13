@@ -32,7 +32,7 @@ class UserRegViewModel {
       });
     } catch (e) {
       print('Error registering user: $e');
-      rethrow; // Throw the error to be handled by the caller
+      rethrow;
     }
   }
 }

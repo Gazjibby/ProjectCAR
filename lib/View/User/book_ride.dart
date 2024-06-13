@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookRide extends StatefulWidget {
   const BookRide({Key? key}) : super(key: key);
@@ -21,6 +22,7 @@ class _BookRideState extends State<BookRide> {
   List<LatLng> _polyLinePoints = [];
   LatLng? _pickupLocation;
   LatLng? _dropoffLocation;
+  LatLng? _driverLocation;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _BookRideState extends State<BookRide> {
     if (_viewModel.activeRideId != null) {
       _loadRoute();
       _setMarkerLocations();
+      // _listenToDriverLocation();
     }
   }
 
@@ -122,6 +125,23 @@ class _BookRideState extends State<BookRide> {
     }
   }
 
+  /* void _listenToDriverLocation() {
+    final driverId = _viewModel.driverdetail;
+
+    FirebaseFirestore.instance
+        .collection('driver_locations')
+        .doc(driverId)
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.exists) {
+        final data = snapshot.data();
+        setState(() {
+          _driverLocation = LatLng(data!['latitude'], data['longitude']);
+        });
+      }
+    });
+  } */
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<BookRideViewModel>.value(
@@ -158,6 +178,16 @@ class _BookRideState extends State<BookRide> {
                   MarkerLayer(
                     key: UniqueKey(),
                     markers: [
+                      /* Marker(
+                        width: 40,
+                        height: 40,
+                        point: _driverLocation!,
+                        child: const Icon(
+                          Icons.drive_eta_rounded,
+                          color: Colors.grey,
+                          size: 40,
+                        ),
+                      ), */
                       Marker(
                         width: 40,
                         height: 40,

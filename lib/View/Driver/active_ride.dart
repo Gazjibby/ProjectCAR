@@ -10,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:projectcar/location.dart';
 
 class ActiveRide extends StatefulWidget {
   const ActiveRide({super.key});
@@ -19,6 +20,7 @@ class ActiveRide extends StatefulWidget {
 }
 
 class _ActiveRideState extends State<ActiveRide> {
+  //LocationService? _locationService;
   List<LatLng> _polyLinePoints = [];
   LatLng? _pickupLocation;
   LatLng? _dropoffLocation;
@@ -26,6 +28,7 @@ class _ActiveRideState extends State<ActiveRide> {
   @override
   void initState() {
     super.initState();
+
     final driverProvider = Provider.of<DriverProvider>(context, listen: false);
     final activeRideProvider =
         Provider.of<ActiveRideProvider>(context, listen: false);
@@ -40,6 +43,8 @@ class _ActiveRideState extends State<ActiveRide> {
             activeRide.dropoffLocation, activeRide.pickupLocation);
       }
     });
+    /*  _locationService =
+        LocationService(driverProvider.driver!.matricStaffNumber); */
   }
 
   Future<void> _loadRoute(String dropOffLocation, String pickUpLocation) async {
@@ -198,13 +203,7 @@ class _ActiveRideState extends State<ActiveRide> {
                         alignPositionOnUpdate: AlignOnUpdate.always,
                         alignDirectionOnUpdate: AlignOnUpdate.never,
                         style: const LocationMarkerStyle(
-                          marker: DefaultLocationMarker(
-                            child: Icon(
-                              Icons.person,
-                              size: 10.0,
-                              color: Color.fromARGB(255, 248, 166, 23),
-                            ),
-                          ),
+                          marker: DefaultLocationMarker(),
                           markerSize: Size(10, 10),
                           markerDirection: MarkerDirection.heading,
                         ),
@@ -293,7 +292,7 @@ class _ActiveRideState extends State<ActiveRide> {
                         onPressed: () {},
                         backgroundColor: AppColors.uniMaroon,
                         foregroundColor: AppColors.uniPeach,
-                        child: const Icon(Icons.qr_code),
+                        child: const Icon(Icons.my_location),
                       ),
                     ),
                   ),

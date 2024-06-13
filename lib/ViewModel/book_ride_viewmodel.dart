@@ -10,6 +10,7 @@ class BookRideViewModel extends ChangeNotifier {
   String? selectedDropoff;
   String? pickupLocation;
   String? dropoffLocation;
+  String? driverdetail;
   int? price;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
@@ -117,6 +118,7 @@ class BookRideViewModel extends ChangeNotifier {
       }
       pickupLocation = rideRequest['Ride Details']['pickupLocation'];
       dropoffLocation = rideRequest['Ride Details']['dropoffLocation'];
+      driverdetail = rideRequest['DriverAccepted'];
     } else {
       rideStatusMessage = '';
       activeRideId = null;
@@ -310,11 +312,6 @@ class BookRideViewModel extends ChangeNotifier {
                       String comment = commentController.text.trim().isEmpty
                           ? ''
                           : commentController.text.trim();
-
-                      await FirebaseFirestore.instance
-                          .collection('Ride Request')
-                          .doc(activeRideId)
-                          .update({'DriverRating': rating});
 
                       await FirebaseFirestore.instance
                           .collection('Driver Ratings')

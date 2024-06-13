@@ -8,16 +8,39 @@ import 'package:projectcar/Providers/bottom_nav_provider.dart';
 import 'package:projectcar/View/User/logout.dart';
 import 'package:projectcar/View/User/user_acc.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class UserHome extends StatefulWidget {
-  const UserHome({super.key, required UserModel user});
-
+  const UserHome({super.key, required this.user});
+  final UserModel user;
   @override
   State<UserHome> createState() => _UserHomeState();
 }
 
 class _UserHomeState extends State<UserHome> {
   @override
+  void initState() {
+    super.initState();
+    _setupFirebaseMessaging();
+  }
+
+  Future<void> _setupFirebaseMessaging() async {
+    await Firebase.initializeApp();
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+  }
+
   Widget build(BuildContext context) {
     return Consumer3<BottomNavProvider, TopNavProvider, LogoutProvider>(
         builder: (context, bottomNav, topNav, logoutProvider, child) {

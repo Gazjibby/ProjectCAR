@@ -2,11 +2,16 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_core/firebase_core.dart';
 
 class NotificationService {
   static const String _serviceAccountPath =
       'lib/Asset/utmcar-62352-6b969942405a.json';
   static const String _projectID = 'utmcar-62352';
+
+  Future<void> initFirebase() async {
+    await Firebase.initializeApp();
+  }
 
   Future<String> _getAccessToken() async {
     final serviceAccountJson = json.decode(

@@ -153,14 +153,14 @@ class _RideReqState extends State<RideReq> {
         }
 
         final userQuerySnapshot = await FirebaseFirestore.instance
-            .collection('drivers')
-            .where('matricStaffNumber', isEqualTo: driverMatricStaffNumber)
+            .collection('users')
+            .where('MatricStaffNo', isEqualTo: rideRequest.userRequest)
             .limit(1)
             .get();
 
         if (userQuerySnapshot.docs.isNotEmpty) {
           final userDoc = userQuerySnapshot.docs.first;
-          final String? userToken = userDoc['driverTokenFCM'];
+          final String? userToken = userDoc['userTokenFCM'];
 
           if (userToken != null) {
             final notificationService = NotificationService();
