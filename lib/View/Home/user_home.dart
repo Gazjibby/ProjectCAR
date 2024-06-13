@@ -14,7 +14,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 class UserHome extends StatefulWidget {
   const UserHome({super.key, required this.user});
   final UserModel user;
-
   @override
   State<UserHome> createState() => _UserHomeState();
 }
