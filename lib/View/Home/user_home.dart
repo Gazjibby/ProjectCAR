@@ -7,6 +7,7 @@ import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/bottom_nav_provider.dart';
 import 'package:projectcar/View/User/logout.dart';
 import 'package:projectcar/View/User/user_acc.dart';
+import 'package:projectcar/View/User/user_ride_history.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -85,6 +86,7 @@ class _UserHomeState extends State<UserHome> {
   final List<Widget> _pages = [
     const BookRide(),
     const UserLogout(),
+    const PersonalRideHistory()
   ];
 
   final List<BottomNavigationBarItem> _items = const [
@@ -92,5 +94,7 @@ class _UserHomeState extends State<UserHome> {
         icon: Icon(Icons.bookmark_add_outlined), label: "Book Ride"),
     BottomNavigationBarItem(
         icon: Icon(Icons.delivery_dining), label: "Coming Soon"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.library_books), label: "Ride History"),
   ];
 }

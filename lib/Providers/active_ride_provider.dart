@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projectcar/Model/active_ride.dart';
 import 'package:intl/intl.dart';
+import 'package:projectcar/notifications.dart';
 
 class ActiveRideProvider with ChangeNotifier {
   ActiveRideModel? _activeRide;
@@ -104,7 +105,8 @@ class ActiveRideProvider with ChangeNotifier {
   }
 
   Future<void> cancelRide() async {
-    String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    String formattedTimestamp =
+        DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
 
     if (_activeRide != null) {
       try {
@@ -132,11 +134,32 @@ class ActiveRideProvider with ChangeNotifier {
           });
         }
 
+        final userQuerySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('MatricStaffNo', isEqualTo: _activeRide!.userRequest)
+            .limit(1)
+            .get();
+
+        if (userQuerySnapshot.docs.isNotEmpty) {
+          final userDoc = userQuerySnapshot.docs.first;
+          final String? userToken = userDoc['userTokenFCM'];
+
+          if (userToken != null) {
+            final notificationService = NotificationService();
+            await notificationService.sendNotification(
+                userToken,
+                'Ride Cancelled',
+                'Your ride request has been cancelled by the driver.');
+          }
+        } else {
+          print('User with MatricStaffNo not found.');
+        }
+
         await fetchActiveRide(_activeRide!.driverAccepted);
 
         notifyListeners();
       } catch (e) {
-        print('Failed to complete ride: $e');
+        print('Failed to cancel ride: $e');
       }
     }
   }

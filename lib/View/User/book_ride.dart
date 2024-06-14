@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -23,6 +25,7 @@ class _BookRideState extends State<BookRide> {
   LatLng? _pickupLocation;
   LatLng? _dropoffLocation;
   LatLng? _driverLocation;
+  Timer? _driverLocationTimer;
 
   @override
   void initState() {
@@ -31,12 +34,18 @@ class _BookRideState extends State<BookRide> {
     _fetchRideStatusAndLoadRoute();
   }
 
+  @override
+  void dispose() {
+    _driverLocationTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _fetchRideStatusAndLoadRoute() async {
     await _viewModel.fetchRideStatus();
     if (_viewModel.activeRideId != null) {
       _loadRoute();
       _setMarkerLocations();
-      // _listenToDriverLocation();
+      _listenToDriverLocation();
     }
   }
 
@@ -125,22 +134,24 @@ class _BookRideState extends State<BookRide> {
     }
   }
 
-  /* void _listenToDriverLocation() {
+  void _listenToDriverLocation() {
     final driverId = _viewModel.driverdetail;
 
     FirebaseFirestore.instance
-        .collection('driver_locations')
+        .collection('driver location')
         .doc(driverId)
-        .snapshots()
-        .listen((snapshot) {
+        .get()
+        .then((snapshot) {
       if (snapshot.exists) {
         final data = snapshot.data();
         setState(() {
           _driverLocation = LatLng(data!['latitude'], data['longitude']);
         });
       }
+    }).catchError((error) {
+      print('Error fetching driver location: $error');
     });
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,13 +174,7 @@ class _BookRideState extends State<BookRide> {
                   alignPositionOnUpdate: AlignOnUpdate.always,
                   alignDirectionOnUpdate: AlignOnUpdate.never,
                   style: const LocationMarkerStyle(
-                    marker: DefaultLocationMarker(
-                      child: Icon(
-                        Icons.person,
-                        size: 10.0,
-                        color: Color.fromARGB(255, 248, 166, 23),
-                      ),
-                    ),
+                    marker: DefaultLocationMarker(),
                     markerSize: Size(10, 10),
                     markerDirection: MarkerDirection.heading,
                   ),
@@ -178,16 +183,16 @@ class _BookRideState extends State<BookRide> {
                   MarkerLayer(
                     key: UniqueKey(),
                     markers: [
-                      /* Marker(
-                        width: 40,
-                        height: 40,
+                      Marker(
+                        width: 20,
+                        height: 20,
                         point: _driverLocation!,
                         child: const Icon(
                           Icons.drive_eta_rounded,
                           color: Colors.grey,
                           size: 40,
                         ),
-                      ), */
+                      ),
                       Marker(
                         width: 40,
                         height: 40,
@@ -311,7 +316,9 @@ class _BookRideState extends State<BookRide> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 FloatingActionButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    viewModel.showDetails(context);
+                                  },
                                   backgroundColor: AppColors.uniMaroon,
                                   foregroundColor: AppColors.uniGold,
                                   child: const Icon(Icons.info),
@@ -339,6 +346,19 @@ class _BookRideState extends State<BookRide> {
                                   child: const Icon(Icons.directions_car),
                                 ),
                               ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(bottom: 10.0, left: 10.0),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: FloatingActionButton(
+                              onPressed: _fetchRideStatusAndLoadRoute,
+                              backgroundColor: AppColors.uniMaroon,
+                              foregroundColor: AppColors.uniGold,
+                              child: const Icon(Icons.refresh_rounded),
                             ),
                           ),
                         ),

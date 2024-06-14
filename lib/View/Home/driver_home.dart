@@ -9,6 +9,8 @@ import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Providers/bottom_nav_provider.dart';
 import 'package:projectcar/Providers/top_nav_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class DriverHome extends StatefulWidget {
   final DriverModel driver;
@@ -23,8 +25,23 @@ class _DriverHomeState extends State<DriverHome>
   @override
   void initState() {
     super.initState();
-    Provider.of<TopNavProvider>(context, listen: false)
-        .initTabController(this, _topTabs.length);
+    _setupFirebaseMessaging();
+  }
+
+  Future<void> _setupFirebaseMessaging() async {
+    await Firebase.initializeApp();
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
   }
 
   @override
@@ -81,10 +98,5 @@ class _DriverHomeState extends State<DriverHome>
     BottomNavigationBarItem(
         icon: Icon(Icons.emoji_transportation), label: "Active Ride"),
     BottomNavigationBarItem(icon: Icon(Icons.ballot), label: "Voting"),
-  ];
-
-  final List<Tab> _topTabs = const [
-    Tab(icon: Icon(Icons.account_circle), text: "Account"),
-    Tab(icon: Icon(Icons.logout), text: "Logout"),
   ];
 }

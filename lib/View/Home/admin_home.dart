@@ -191,6 +191,8 @@ class PollsSection extends StatelessWidget {
 }
 
 class ButtonRow extends StatelessWidget {
+  const ButtonRow({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(

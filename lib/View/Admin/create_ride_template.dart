@@ -173,7 +173,7 @@ class _CreateRideTemplateState extends State<CreateRideTemplate> {
             alignment: Alignment.bottomRight,
             child: FractionallySizedBox(
               widthFactor: 0.3,
-              heightFactor: 0.45,
+              heightFactor: 0.5,
               child: Card(
                 color: AppColors.uniPeach,
                 elevation: 8,
@@ -190,7 +190,7 @@ class _CreateRideTemplateState extends State<CreateRideTemplate> {
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Color.fromARGB(255, 92, 0, 31)),
                       ),
                       TextField(
                         controller: _pickupNameController,

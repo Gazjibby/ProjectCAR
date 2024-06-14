@@ -17,6 +17,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:projectcar/Model/admin.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Model/driver.dart';
+import 'package:projectcar/ViewModel/active_ride_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +45,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FetchPollsProvider()),
         ChangeNotifierProvider(create: (context) => TopNavProvider()),
         ChangeNotifierProvider(create: (context) => BottomNavProvider()),
+        ChangeNotifierProvider(
+          create: (context) => ActiveRideViewModel(
+            Provider.of<ActiveRideProvider>(context, listen: false),
+            Provider.of<RideTemplateProvider>(context, listen: false),
+          ),
+        ),
       ],
       child: MaterialApp(
         title: "Prebet UTM",

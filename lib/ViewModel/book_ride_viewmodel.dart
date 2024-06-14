@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/ride_template_provider.dart';
+import 'package:projectcar/notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -128,34 +129,71 @@ class BookRideViewModel extends ChangeNotifier {
 
   Future<void> cancelRide() async {
     if (activeRideId != null) {
-      await FirebaseFirestore.instance
-          .collection('Ride Request')
-          .doc(activeRideId)
-          .update({'Status': 'Cancelled By User'});
-
-      QuerySnapshot rideLogQuerySnapshot = await FirebaseFirestore.instance
-          .collection('Ride Log')
-          .where('rideReqID', isEqualTo: activeRideId)
-          .get();
-
-      String formattedTimestamp = DateTime.now().toIso8601String();
-
-      for (var doc in rideLogQuerySnapshot.docs) {
+      try {
         await FirebaseFirestore.instance
+            .collection('Ride Request')
+            .doc(activeRideId)
+            .update({'Status': 'Cancelled By User'});
+
+        QuerySnapshot rideLogQuerySnapshot = await FirebaseFirestore.instance
             .collection('Ride Log')
-            .doc(doc.id)
-            .update({
-          'StatusHistory': FieldValue.arrayUnion([
-            {
-              'Status': 'User Cancel Ride Request',
-              'UpTime': formattedTimestamp,
+            .where('rideReqID', isEqualTo: activeRideId)
+            .get();
+
+        String formattedTimestamp = DateTime.now().toIso8601String();
+
+        for (var doc in rideLogQuerySnapshot.docs) {
+          await FirebaseFirestore.instance
+              .collection('Ride Log')
+              .doc(doc.id)
+              .update({
+            'StatusHistory': FieldValue.arrayUnion([
+              {
+                'Status': 'User Cancel Ride Request',
+                'UpTime': formattedTimestamp,
+              }
+            ])
+          });
+        }
+
+        DocumentSnapshot rideRequestSnapshot = await FirebaseFirestore.instance
+            .collection('Ride Request')
+            .doc(activeRideId)
+            .get();
+
+        if (rideRequestSnapshot.exists) {
+          final rideRequestData =
+              rideRequestSnapshot.data() as Map<String, dynamic>;
+          final driverId = rideRequestData['driverAccepted'];
+
+          final userQuerySnapshot = await FirebaseFirestore.instance
+              .collection('drivers')
+              .where('matricStaffNumber', isEqualTo: driverId)
+              .limit(1)
+              .get();
+
+          if (userQuerySnapshot.docs.isNotEmpty) {
+            final driverDoc = userQuerySnapshot.docs.first;
+            final String? driverToken = driverDoc['driverTokenFCM'];
+
+            if (driverToken != null) {
+              final notificationService = NotificationService();
+              await notificationService.sendNotification(driverToken,
+                  'Ride Cancelled', 'The user has cancelled the ride request.');
             }
-          ])
-        });
+          } else {
+            print('Driver with MatricStaffNo not found.');
+          }
+        } else {
+          print('Ride request not found.');
+        }
+
+        rideStatusMessage = '';
+        activeRideId = null;
+        notifyListeners();
+      } catch (e) {
+        print('Failed to cancel ride: $e');
       }
-      rideStatusMessage = '';
-      activeRideId = null;
-      notifyListeners();
     }
   }
 
@@ -390,6 +428,75 @@ class BookRideViewModel extends ChangeNotifier {
     );
   }
 
+  void showDetails(BuildContext context) async {
+    final driverId = driverdetail;
+
+    try {
+      DocumentSnapshot rideSnapshot = await FirebaseFirestore.instance
+          .collection('Ride Request')
+          .doc(activeRideId)
+          .get();
+      var rideData = rideSnapshot.data() as Map<String, dynamic>?;
+
+      QuerySnapshot driverQuerySnapshot = await FirebaseFirestore.instance
+          .collection('drivers')
+          .where('matricStaffNumber', isEqualTo: driverId)
+          .limit(1)
+          .get();
+
+      var driverData = driverQuerySnapshot.docs.isNotEmpty
+          ? driverQuerySnapshot.docs.first.data() as Map<String, dynamic>?
+          : null;
+
+      if (rideData != null && driverData != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Ride and Driver Details'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                      'Pickup Location: ${rideData['Ride Details']['pickupLocation']}'),
+                  Text(
+                      'Dropoff Location: ${rideData['Ride Details']['dropoffLocation']}'),
+                  Text(
+                      'Pickup Time: ${rideData['Ride Details']['pickupTime']}'),
+                  Text('Price: RM ${rideData['Ride Details']['price']}'),
+                  const SizedBox(height: 20),
+                  Text('Driver Name: ${driverData['fullName']}'),
+                  Text(
+                      'Car: ${driverData['Car Details']['carBrand']} ${driverData['Car Details']['carModel']}'),
+                  Text('Car Color: ${driverData['Car Details']['carColor']}'),
+                  Text(
+                      'Plate Number: ${driverData['Car Details']['plateNumber']}'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Failed to load ride or driver details')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching details: $e')),
+      );
+    }
+  }
+
   void showBookingForm(BuildContext context) {
     showDialog(
       context: context,
@@ -531,54 +638,4 @@ class BookRideViewModel extends ChangeNotifier {
       },
     );
   }
-
-  /* Future<List<LatLng>> drawRoute(
-      String pickupLocation, String dropoffLocation) async {
-    final rideTemplateProvider =
-        Provider.of<RideTemplateProvider>(context, listen: false);
-    final selectedRideTemplate =
-        rideTemplateProvider.getRideTemplate(pickupLocation, dropoffLocation);
-
-    if (selectedRideTemplate == null) {
-      print('Selected ride template is null');
-      return [];
-    }
-
-    final pickupLatitude = selectedRideTemplate.pickupLat;
-    final pickupLongitude = selectedRideTemplate.pickupLng;
-    final dropoffLatitude = selectedRideTemplate.dropoffLat;
-    final dropoffLongitude = selectedRideTemplate.dropoffLng;
-
-    final apiUrl = 'https://router.project-osrm.org/route/v1/driving/'
-        '$pickupLongitude,$pickupLatitude;$dropoffLongitude,$dropoffLatitude?overview=full';
-
-    final response = await http.get(Uri.parse(apiUrl));
-
-    if (response.statusCode == 200) {
-      final decodedResponse =
-          json.decode(response.body) as Map<String, dynamic>;
-      final routes = decodedResponse['routes'] as List?;
-      if (routes != null && routes.isNotEmpty) {
-        final geometry = routes[0]['geometry'] as Map<String, dynamic>;
-        final routePoints = geometry['coordinates'] as List?;
-        if (routePoints != null) {
-          final polylinePoints =
-              routePoints.map((point) => LatLng(point[1], point[0])).toList();
-          print(
-              'Route drawn from ($pickupLatitude, $pickupLongitude) to ($dropoffLatitude, $dropoffLongitude)');
-          return polylinePoints;
-        } else {
-          print('Route points not found in the response');
-          return [];
-        }
-      } else {
-        print('Routes not found in the response');
-        return [];
-      }
-    } else {
-      print(
-          'Failed to fetch route from OSRM API. Status code: ${response.statusCode}');
-      return [];
-    }
-  } */
 }

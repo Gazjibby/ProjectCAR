@@ -18,7 +18,6 @@ class LoginViewModel {
     required String password,
   }) async {
     try {
-      // Check for admin login
       QuerySnapshot<Map<String, dynamic>> adminQuerySnapshot = await _firestore
           .collection('Admin')
           .where('Username', isEqualTo: email)
@@ -38,7 +37,6 @@ class LoginViewModel {
         return adminModel;
       }
 
-      // Check for regular user or driver login
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -75,6 +73,16 @@ class LoginViewModel {
             .get();
 
         if (driverDoc.exists) {
+          String status = driverDoc.data()?['status'] ?? '';
+          if (status == 'pending' || status == 'Rejected') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Driver account is $status. Please contact support.')),
+            );
+            await _auth.signOut();
+            return null;
+          }
           DriverModel driverModel = DriverModel(
             email: userCredential.user!.email ?? '',
             fullName: driverDoc.data()?['fullName'] ?? '',
