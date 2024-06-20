@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:projectcar/Model/active_ride.dart';
 import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
-import 'package:projectcar/Providers/ride_template_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/ViewModel/active_ride_viewmodel.dart';
 import 'package:projectcar/location.dart';
@@ -19,6 +18,7 @@ class ActiveRide extends StatefulWidget {
 }
 
 class _ActiveRideState extends State<ActiveRide> {
+  // ignore: unused_field
   LocationService? _locationService;
 
   @override

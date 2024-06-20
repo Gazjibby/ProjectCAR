@@ -32,7 +32,7 @@ class _RideHistoryState extends State<RideHistory> {
                 return ListTile(
                   title: Text(rideHistory.rideReqID),
                   subtitle: Text(
-                      'Driver: ${rideHistory.driverAccepted}, Passenger: ${rideHistory.userName}'),
+                      'Driver: ${rideHistory.driverAccepted}, Passenger: ${rideHistory.userRequest}'),
                   onTap: () {
                     showDialog(
                       context: context,

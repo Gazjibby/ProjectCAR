@@ -9,6 +9,7 @@ import 'package:projectcar/View/Admin/driverApp_view.dart';
 import 'package:projectcar/View/Admin/manageDriver_view.dart';
 import 'package:projectcar/View/Admin/manageUser_view.dart';
 import 'package:projectcar/View/Admin/createVote_view.dart';
+import 'package:projectcar/View/Admin/ride_history.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/Providers/get_poll_db_provider.dart';
 import 'package:projectcar/Providers/poll_db_provider.dart';
@@ -197,32 +198,48 @@ class ButtonRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {
-              nextPage(context, const DriverApplication());
-            },
-            child: const Text('Manage Driver Applications'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  nextPage(context, const DriverApplication());
+                },
+                child: const Text('Manage Driver Applications'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  nextPage(context, const ManageUser());
+                },
+                child: const Text('Manage Users'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  nextPage(context, const ManageDriver());
+                },
+                child: const Text('Manage Drivers'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  nextPage(context, const CreateRideTemplate());
+                },
+                child: const Text('Create New Ride Template'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              nextPage(context, const ManageUser());
-            },
-            child: const Text('Manage Users'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              nextPage(context, const ManageDriver());
-            },
-            child: const Text('Manage Drivers'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              nextPage(context, const CreateRideTemplate());
-            },
-            child: const Text('Create New Ride Template'),
+          const SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  nextPage(context, const RideHistory());
+                },
+                child: const Text('Ride History'),
+              ),
+            ],
           ),
         ],
       ),

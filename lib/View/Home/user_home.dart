@@ -31,6 +31,7 @@ class _UserHomeState extends State<UserHome> {
 
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+    // ignore: unused_local_variable
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,

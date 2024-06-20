@@ -33,6 +33,7 @@ class _DriverHomeState extends State<DriverHome>
 
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+    // ignore: unused_local_variable
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
