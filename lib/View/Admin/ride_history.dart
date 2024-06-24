@@ -32,20 +32,24 @@ class _RideHistoryState extends State<RideHistory> {
                 return ListTile(
                   title: Text(rideHistory.rideReqID),
                   subtitle: Text(
-                      'Driver: ${rideHistory.driverAccepted}, Passenger: ${rideHistory.userRequest}'),
+                      'Driver: ${rideHistory.driverAccepted}, Passenger: ${rideHistory.userRequest}, Status: ${rideHistory.status}'),
                   onTap: () {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return ListView.builder(
-                          itemCount: rideHistory.statusHistory.length,
-                          itemBuilder: (context, index) {
-                            final status = rideHistory.statusHistory[index];
-                            return ListTile(
-                              title: Text(status['Status'] ?? ''),
-                              subtitle: Text(status['UpTime'] ?? ''),
-                            );
-                          },
+                        return AlertDialog(
+                          title: const Text('Status History'),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: rideHistory.statusHistory.map((status) {
+                                return ListTile(
+                                  title: Text(status['Status'] ?? ''),
+                                  subtitle: Text(status['UpTime'] ?? ''),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         );
                       },
                     );

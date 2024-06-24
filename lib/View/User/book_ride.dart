@@ -25,19 +25,12 @@ class _BookRideState extends State<BookRide> {
   LatLng? _pickupLocation;
   LatLng? _dropoffLocation;
   LatLng? _driverLocation;
-  Timer? _driverLocationTimer;
 
   @override
   void initState() {
     super.initState();
     _viewModel = BookRideViewModel(context);
     _fetchRideStatusAndLoadRoute();
-  }
-
-  @override
-  void dispose() {
-    _driverLocationTimer?.cancel();
-    super.dispose();
   }
 
   Future<void> _fetchRideStatusAndLoadRoute() async {
@@ -316,6 +309,7 @@ class _BookRideState extends State<BookRide> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 FloatingActionButton(
+                                  heroTag: "detailsButton",
                                   onPressed: () {
                                     viewModel.showDetails(context);
                                   },
@@ -325,6 +319,7 @@ class _BookRideState extends State<BookRide> {
                                 ),
                                 const SizedBox(height: 8),
                                 FloatingActionButton(
+                                  heroTag: "bookingButton",
                                   onPressed: () async {
                                     bool hasActiveRide =
                                         await viewModel.hasActiveRide();
@@ -349,17 +344,14 @@ class _BookRideState extends State<BookRide> {
                             ),
                           ),
                         ),
-                        Container(
-                          margin:
-                              const EdgeInsets.only(bottom: 10.0, left: 10.0),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: FloatingActionButton(
-                              onPressed: _fetchRideStatusAndLoadRoute,
-                              backgroundColor: AppColors.uniMaroon,
-                              foregroundColor: AppColors.uniGold,
-                              child: const Icon(Icons.refresh_rounded),
-                            ),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: FloatingActionButton(
+                            heroTag: "refreshButton",
+                            onPressed: _fetchRideStatusAndLoadRoute,
+                            backgroundColor: AppColors.uniMaroon,
+                            foregroundColor: AppColors.uniGold,
+                            child: const Icon(Icons.refresh_rounded),
                           ),
                         ),
                       ],

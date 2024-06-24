@@ -3,7 +3,7 @@ import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Model/ride_request.dart';
 import 'package:projectcar/Providers/get_ride_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
-import 'package:projectcar/notifications.dart';
+import 'package:projectcar/Utils/notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';

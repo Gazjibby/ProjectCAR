@@ -71,8 +71,7 @@ class _UserRegViewState extends State<UserRegView> {
                 });
               },
               items: <String>[
-                if (_selectedCollege.isEmpty)
-                  'Select College', // hint or default value
+                if (_selectedCollege.isEmpty) 'Select College',
                 'KRP',
                 'KTR',
                 'KTHO',

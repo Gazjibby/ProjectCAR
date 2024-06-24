@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:projectcar/Model/ride_history.dart';
 import 'package:projectcar/Providers/logout_provider.dart';
+import 'package:projectcar/Providers/ride_history_provider.dart';
 import 'package:projectcar/View/login_view.dart';
+import 'package:projectcar/ViewModel/user_ride_history_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/firebase_options.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
@@ -37,6 +40,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ActiveRideProvider()),
         ChangeNotifierProvider(create: (_) => RideTemplateProvider()),
         ChangeNotifierProvider(create: (_) => RideProvider()),
+        ChangeNotifierProvider(create: (_) => RideHistoryProvider()),
         ChangeNotifierProvider(create: (_) => LogoutProvider()),
         ChangeNotifierProvider(create: (_) => AdminProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:projectcar/Utils/message.dart';
@@ -45,8 +43,6 @@ class _VotePageState extends State<VotePage> {
                   Column(
                     children: List.generate(polls.pollsList.length, (index) {
                       final data = polls.pollsList[index];
-
-                      log(data.data().toString());
 
                       Map poll = data["poll"];
 
@@ -110,14 +106,13 @@ class _VotePageState extends State<VotePage> {
 
                                     if (driver == null ||
                                         driver.matricStaffNumber.isEmpty) {
-                                      log("Driver or matricStaffNumber is null");
                                       return;
                                     }
 
-                                    log(driver.matricStaffNumber);
+                                    // log(driver.matricStaffNumber);
 
                                     if (voters.isEmpty) {
-                                      log("No vote");
+                                      // log("No vote");
                                       vote.votePoll(
                                           pollId: data.id,
                                           pollData: data,
@@ -134,7 +129,7 @@ class _VotePageState extends State<VotePage> {
                                         orElse: () => null,
                                       );
                                       if (isExists == null) {
-                                        log("Driver does not exist");
+                                        // log("Driver does not exist");
                                         vote.votePoll(
                                             pollId: data.id,
                                             pollData: data,

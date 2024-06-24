@@ -32,66 +32,6 @@ class _DriverApplicationState extends State<DriverApplication> {
 
             final List<DocumentSnapshot> documents = snapshot.data!.docs;
 
-            // return DataTable(
-            //   columns: const [
-            //     DataColumn(label: Text('Email')),
-            //     DataColumn(label: Text('Full Name')),
-            //     DataColumn(label: Text('Matric/Staff Number')),
-            //     DataColumn(label: Text('IC Number')),
-            //     DataColumn(label: Text('Telephone Number')),
-            //     DataColumn(label: Text('College')),
-            //     DataColumn(label: Text('Photo')),
-            //     DataColumn(label: Text('Actions')),
-            //   ],
-            //   rows: documents.map((document) {
-            //     final Map<String, dynamic> data =
-            //         document.data() as Map<String, dynamic>;
-            //     final String documentId = document.id;
-            //     return DataRow(cells: [
-            //       DataCell(Text(data['email'] ?? '')),
-            //       DataCell(Text(data['fullName'] ?? '')),
-            //       DataCell(Text(data['matricStaffNumber'] ?? '')),
-            //       DataCell(Text(data['icNumber'] ?? '')),
-            //       DataCell(Text(data['telephoneNumber'] ?? '')),
-            //       DataCell(Text(data['college'] ?? '')),
-            //       DataCell(
-            //         GestureDetector(
-            //           onTap: () {
-            //             launchUrl(Uri.parse(data['photoUrl'] ?? ''));
-            //           },
-            //           child: const Icon(Icons.photo, size: 24),
-            //         ),
-            //       ),
-            //       DataCell(
-            //         Row(
-            //           children: [
-            //             ElevatedButton(
-            //               onPressed: () async {
-            //                 await _firestore
-            //                     .collection('drivers')
-            //                     .doc(documentId)
-            //                     .update({'status': 'Active'});
-            //               },
-            //               child: const Text('Accept'),
-            //             ),
-            //             ElevatedButton(
-            //               onPressed: () async {
-            //                 await _firestore
-            //                     .collection('drivers')
-            //                     .doc(documentId)
-            //                     .update({'status': 'Rejected'});
-            //               },
-            //               child: const Text('Reject'),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ]);
-            //   }).toList(),
-            // );
-
-            // return ApplicationCard(email: email, fullName: fullName, matricStaffNumber: matricStaffNumber, icNumber: icNumber, telephoneNumber: telephoneNumber, college: college, photoUrl: photoUrl, documentId: documentId)
-
             return ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: documents.length,

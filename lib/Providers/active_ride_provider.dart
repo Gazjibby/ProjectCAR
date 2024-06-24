@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projectcar/Model/active_ride.dart';
 import 'package:intl/intl.dart';
-import 'package:projectcar/notifications.dart';
+import 'package:projectcar/Utils/notifications.dart';
 
 class ActiveRideProvider with ChangeNotifier {
   ActiveRideModel? _activeRide;
@@ -11,10 +11,10 @@ class ActiveRideProvider with ChangeNotifier {
 
   DateTime now = DateTime.now();
 
-  Future<void> fetchActiveRide(String driverId) async {
+  Future<void> fetchActiveRide(String driverMatricStaffNumber) async {
     final QuerySnapshot result = await FirebaseFirestore.instance
         .collection('Ride Request')
-        .where('DriverAccepted', isEqualTo: driverId)
+        .where('DriverAccepted', isEqualTo: driverMatricStaffNumber)
         .where('Status', whereIn: ['Ongoing', 'Active']).get();
 
     if (result.docs.isNotEmpty) {

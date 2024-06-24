@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/ride_template_provider.dart';
-import 'package:projectcar/notifications.dart';
+import 'package:projectcar/Utils/notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class BookRideViewModel extends ChangeNotifier {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -140,7 +141,9 @@ class BookRideViewModel extends ChangeNotifier {
             .where('rideReqID', isEqualTo: activeRideId)
             .get();
 
-        String formattedTimestamp = DateTime.now().toIso8601String();
+        DateTime now = DateTime.now();
+        String formattedTimestamp =
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
         for (var doc in rideLogQuerySnapshot.docs) {
           await FirebaseFirestore.instance
@@ -226,7 +229,8 @@ class BookRideViewModel extends ChangeNotifier {
 
       String rideReqID = value.id;
 
-      String formattedTimestamp = DateTime.now().toIso8601String();
+      DateTime now = DateTime.now();
+      String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
       Map<String, dynamic> initialRideLogData = {
         'rideReqID': rideReqID,
         'UserRequest': userMatricStaffNumber,
@@ -259,7 +263,8 @@ class BookRideViewModel extends ChangeNotifier {
           .doc(activeRideId)
           .update({'Status': 'Completed'});
 
-      String formattedTimestamp = DateTime.now().toIso8601String();
+      DateTime now = DateTime.now();
+      String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
 
       QuerySnapshot rideLogQuerySnapshot = await FirebaseFirestore.instance
           .collection('Ride Log')
@@ -286,10 +291,8 @@ class BookRideViewModel extends ChangeNotifier {
   }
 
   Future<void> showRatingDialog() async {
-    int rating = 3;
+    int rating = 1;
     TextEditingController commentController = TextEditingController();
-
-    print('something: $activeRideId');
 
     showDialog(
       context: context,

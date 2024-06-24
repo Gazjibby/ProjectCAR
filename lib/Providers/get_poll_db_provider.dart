@@ -4,16 +4,12 @@ import 'package:flutter/material.dart';
 
 class FetchPollsProvider extends ChangeNotifier {
   List<DocumentSnapshot> _pollsList = [];
-  List<DocumentSnapshot> _usersPollsList = [];
 
   bool _isLoading = true;
 
   bool get isLoading => _isLoading;
 
   List<DocumentSnapshot> get pollsList => _pollsList;
-  List<DocumentSnapshot> get userPollsList => _usersPollsList;
-
-  User? user = FirebaseAuth.instance.currentUser;
 
   CollectionReference pollCollection =
       FirebaseFirestore.instance.collection("Voting Session");

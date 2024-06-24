@@ -59,7 +59,7 @@ class RideProvider with ChangeNotifier {
         }
       }
 
-      return documents.isNotEmpty; // Return true if there are ongoing rides
+      return documents.isNotEmpty;
     } catch (e) {
       print('Error checking ongoing ride: $e');
       return false;

@@ -9,6 +9,7 @@ class RideHistoryModel {
   final String pickupTime;
   final int passengerCount;
   final int price;
+  final String status;
   final List<Map<String, String>> statusHistory;
 
   RideHistoryModel({
@@ -22,6 +23,7 @@ class RideHistoryModel {
     required this.pickupTime,
     required this.passengerCount,
     required this.price,
+    required this.status,
     required this.statusHistory,
   });
 
@@ -38,6 +40,7 @@ class RideHistoryModel {
       pickupTime: data['Ride Details']['pickupTime'] ?? '',
       passengerCount: data['Ride Details']['passengerCount'] ?? 0,
       price: data['Ride Details']['price'] ?? 0,
+      status: data['Status'],
       statusHistory: statusHistory,
     );
   }

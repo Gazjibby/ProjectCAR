@@ -4,7 +4,7 @@ import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
 import 'package:projectcar/ViewModel/active_ride_viewmodel.dart';
-import 'package:projectcar/location.dart';
+import 'package:projectcar/Utils/location.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -170,6 +170,12 @@ class _ActiveRideState extends State<ActiveRide> {
                           ElevatedButton(
                             onPressed: () {
                               provider.cancelRide();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Ride request has been cancelled.'),
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.uniMaroon,
