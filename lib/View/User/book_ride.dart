@@ -39,6 +39,10 @@ class _BookRideState extends State<BookRide> {
       _loadRoute();
       _setMarkerLocations();
       _listenToDriverLocation();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No ride request made yet.')),
+      );
     }
   }
 
@@ -340,11 +344,19 @@ class _BookRideState extends State<BookRide> {
                                   foregroundColor: AppColors.uniGold,
                                   child: const Icon(Icons.directions_car),
                                 ),
+                                const SizedBox(height: 8),
+                                FloatingActionButton(
+                                  heroTag: "refreshButton",
+                                  onPressed: _fetchRideStatusAndLoadRoute,
+                                  backgroundColor: AppColors.uniMaroon,
+                                  foregroundColor: AppColors.uniGold,
+                                  child: const Icon(Icons.refresh_rounded),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        Align(
+                        /* Align(
                           alignment: Alignment.bottomLeft,
                           child: FloatingActionButton(
                             heroTag: "refreshButton",
@@ -353,7 +365,7 @@ class _BookRideState extends State<BookRide> {
                             foregroundColor: AppColors.uniGold,
                             child: const Icon(Icons.refresh_rounded),
                           ),
-                        ),
+                        ), */
                       ],
                     ),
                   );

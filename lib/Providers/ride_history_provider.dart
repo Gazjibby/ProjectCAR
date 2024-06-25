@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projectcar/Model/ride_history.dart';
+import 'package:projectcar/Model/admin_ride_history.dart';
+import 'package:projectcar/Model/user.dart';
+import 'package:projectcar/Model/driver.dart';
 
 class RideHistoryProvider with ChangeNotifier {
-  List<RideHistoryModel> _rideHistoryList = [];
+  List<AdminRideHistoryModel> _rideHistoryList = [];
   bool _isLoading = true;
 
-  List<RideHistoryModel> get rideHistoryList => _rideHistoryList;
+  List<AdminRideHistoryModel> get rideHistoryList => _rideHistoryList;
   bool get isLoading => _isLoading;
 
   RideHistoryProvider() {
@@ -17,7 +19,7 @@ class RideHistoryProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    List<RideHistoryModel> rideHistoryList = [];
+    List<AdminRideHistoryModel> rideHistoryList = [];
 
     try {
       QuerySnapshot rideHistorySnapshot =
@@ -42,8 +44,34 @@ class RideHistoryProvider with ChangeNotifier {
               : [];
         }
 
-        RideHistoryModel rideHistory =
-            RideHistoryModel.fromMap(data, statusHistory);
+        String userRequest = data['UserRequest'];
+        QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('MatricStaffNo', isEqualTo: userRequest)
+            .get();
+
+        if (userSnapshot.docs.isEmpty) {
+          continue;
+        }
+
+        UserModel user = UserModel.fromMap(
+            userSnapshot.docs.first.data() as Map<String, dynamic>);
+
+        String driverAccepted = data['DriverAccepted'];
+        QuerySnapshot driverSnapshot = await FirebaseFirestore.instance
+            .collection('drivers')
+            .where('matricStaffNumber', isEqualTo: driverAccepted)
+            .get();
+
+        if (driverSnapshot.docs.isEmpty) {
+          continue;
+        }
+
+        DriverModel driver = DriverModel.fromMap(
+            driverSnapshot.docs.first.data() as Map<String, dynamic>);
+
+        AdminRideHistoryModel rideHistory =
+            AdminRideHistoryModel.fromMap(data, statusHistory, user, driver);
         rideHistoryList.add(rideHistory);
       }
     } catch (e) {

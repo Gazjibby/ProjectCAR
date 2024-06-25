@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projectcar/Model/ride_history.dart';
+import 'package:projectcar/Model/user_ride_history.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/ViewModel/user_ride_history_viewmodel.dart';
 import 'package:provider/provider.dart';

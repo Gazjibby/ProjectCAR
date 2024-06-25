@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:projectcar/Model/ride_history.dart';
 import 'package:projectcar/Providers/logout_provider.dart';
 import 'package:projectcar/Providers/ride_history_provider.dart';
 import 'package:projectcar/View/login_view.dart';
-import 'package:projectcar/ViewModel/user_ride_history_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/firebase_options.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
@@ -15,7 +13,6 @@ import 'package:projectcar/Providers/get_poll_db_provider.dart';
 import 'package:projectcar/Providers/bottom_nav_provider.dart';
 import 'package:projectcar/Providers/get_ride_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
-import 'package:projectcar/splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projectcar/Model/admin.dart';
 import 'package:projectcar/Model/user.dart';

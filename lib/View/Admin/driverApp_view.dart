@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projectcar/View/Admin/application_card.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DriverApplication extends StatefulWidget {
   const DriverApplication({super.key});
@@ -38,7 +37,6 @@ class _DriverApplicationState extends State<DriverApplication> {
               itemBuilder: (context, index) {
                 final Map<String, dynamic> data =
                     documents[index].data() as Map<String, dynamic>;
-                final String documentId = documents[index].id;
                 return ApplicationCard(
                   email: data['email'] ?? '',
                   fullName: data['fullName'] ?? '',

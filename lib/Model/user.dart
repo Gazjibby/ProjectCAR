@@ -9,14 +9,27 @@ class UserModel {
   final String college;
   final String userTokenFCM;
 
-  UserModel(
-      {required this.email,
-      required this.fullName,
-      required this.matricStaffNumber,
-      required this.icNumber,
-      required this.telephoneNumber,
-      required this.college,
-      required this.userTokenFCM});
+  UserModel({
+    required this.email,
+    required this.fullName,
+    required this.matricStaffNumber,
+    required this.icNumber,
+    required this.telephoneNumber,
+    required this.college,
+    required this.userTokenFCM,
+  });
+
+  factory UserModel.fromMap(Map<String, dynamic> data) {
+    return UserModel(
+      email: data['email'] ?? '',
+      fullName: data['fullname'] ?? '',
+      matricStaffNumber: data['MatricStaffNo'] ?? '',
+      icNumber: data['ICNO'] ?? '',
+      telephoneNumber: data['telNo'] ?? '',
+      college: data['collegeAddress'] ?? '',
+      userTokenFCM: data['userTokenFCM'] ?? '',
+    );
+  }
 }
 
 class UserProvider with ChangeNotifier {
