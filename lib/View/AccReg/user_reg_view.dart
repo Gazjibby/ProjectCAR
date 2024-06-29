@@ -3,7 +3,9 @@ import 'package:projectcar/View/login_view.dart';
 import 'package:projectcar/ViewModel/user_reg_viewmodel.dart';
 
 class UserRegView extends StatefulWidget {
-  UserRegView({Key? key}) : super(key: key);
+  final bool isAdmin;
+
+  UserRegView({super.key, this.isAdmin = false});
 
   @override
   State<UserRegView> createState() => _UserRegViewState();
@@ -113,10 +115,14 @@ class _UserRegViewState extends State<UserRegView> {
         telephoneNumber: _telephoneNumberController.text,
         college: _selectedCollege,
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginView()),
-      );
+      if (!widget.isAdmin) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginView()),
+        );
+      } else {
+        Navigator.pop(context);
+      }
     } catch (e) {
       print('Error registering user: $e');
       ScaffoldMessenger.of(context).showSnackBar(

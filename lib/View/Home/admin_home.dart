@@ -10,6 +10,7 @@ import 'package:projectcar/View/Admin/manageDriver_view.dart';
 import 'package:projectcar/View/Admin/manageUser_view.dart';
 import 'package:projectcar/View/Admin/createVote_view.dart';
 import 'package:projectcar/View/Admin/ride_history.dart';
+import 'package:projectcar/View/Admin/vote_result.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/Providers/get_poll_db_provider.dart';
 import 'package:projectcar/Providers/poll_db_provider.dart';
@@ -238,6 +239,12 @@ class ButtonRow extends StatelessWidget {
                   nextPage(context, const RideHistory());
                 },
                 child: const Text('Ride History'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  nextPage(context, const PollResultsPage());
+                },
+                child: const Text('Vote History'),
               ),
             ],
           ),

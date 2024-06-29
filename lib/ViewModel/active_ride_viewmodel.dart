@@ -103,4 +103,28 @@ class ActiveRideViewModel extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void showQrCodeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('QR Code'),
+          content: Image.asset(
+            'lib/Asset/images/DummyQR.png',
+            width: 200.0,
+            height: 200.0,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

@@ -31,4 +31,22 @@ class FetchPollsProvider extends ChangeNotifier {
       }
     });
   }
+
+  void fetchAllPolls() async {
+    _isLoading = true;
+    notifyListeners();
+
+    pollCollection.get().then((QuerySnapshot value) {
+      if (value.docs.isEmpty) {
+        _pollsList.clear();
+        _isLoading = false;
+        notifyListeners();
+      } else {
+        final data = value.docs;
+        _pollsList = data;
+        _isLoading = false;
+        notifyListeners();
+      }
+    });
+  }
 }

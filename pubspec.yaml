@@ -84,6 +84,8 @@ flutter:
      - lib/Asset/utmcar-62352-6b969942405a.json
      - lib/Asset/images/Logo.png
      - lib/Asset/images/icon.png
+     - lib/Asset/images/DummyQR.png
+
 
 
 flutter_icons:

@@ -176,7 +176,9 @@ class _BookRideState extends State<BookRide> {
                     markerDirection: MarkerDirection.heading,
                   ),
                 ),
-                if (_pickupLocation != null && _dropoffLocation != null)
+                if (_pickupLocation != null &&
+                    _dropoffLocation != null &&
+                    _driverLocation != null)
                   MarkerLayer(
                     key: UniqueKey(),
                     markers: [
@@ -274,7 +276,40 @@ class _BookRideState extends State<BookRide> {
                                                   _polyLinePoints =
                                                       List.empty();
                                                 } else {
-                                                  viewModel.cancelRide();
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Cancel Ride'),
+                                                        content: const Text(
+                                                            'Are you sure you want to cancel the ride request?'),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: const Text(
+                                                                'No'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              viewModel
+                                                                  .cancelRide();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: const Text(
+                                                                'Yes'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
                                                 }
                                               },
                                               style: ElevatedButton.styleFrom(
@@ -350,7 +385,7 @@ class _BookRideState extends State<BookRide> {
                                   onPressed: _fetchRideStatusAndLoadRoute,
                                   backgroundColor: AppColors.uniMaroon,
                                   foregroundColor: AppColors.uniGold,
-                                  child: const Icon(Icons.refresh_rounded),
+                                  child: const Icon(Icons.refresh),
                                 ),
                               ],
                             ),

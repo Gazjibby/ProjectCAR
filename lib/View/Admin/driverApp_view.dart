@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projectcar/View/Admin/application_card.dart';
+import 'package:projectcar/View/Admin/driver_app_viewmodel.dart';
 
 class DriverApplication extends StatefulWidget {
   const DriverApplication({super.key});

@@ -18,13 +18,15 @@ class ActiveRide extends StatefulWidget {
 }
 
 class _ActiveRideState extends State<ActiveRide> {
-  // ignore: unused_field
   LocationService? _locationService;
 
   @override
   void initState() {
     super.initState();
+    _initializeActiveRide();
+  }
 
+  void _initializeActiveRide() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final driverProvider =
           Provider.of<DriverProvider>(context, listen: false);
@@ -169,12 +171,37 @@ class _ActiveRideState extends State<ActiveRide> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              provider.cancelRide();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Ride request has been cancelled.'),
-                                ),
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Cancel Ride'),
+                                    content: const Text(
+                                        'Are you sure you want to cancel the ride request?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('No'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          provider.cancelRide();
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Ride request has been cancelled.'),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -197,7 +224,9 @@ class _ActiveRideState extends State<ActiveRide> {
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: FloatingActionButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        viewModel.showQrCodeDialog(context);
+                      },
                       backgroundColor: AppColors.uniMaroon,
                       foregroundColor: AppColors.uniPeach,
                       child: const Icon(Icons.qr_code),
@@ -236,13 +265,27 @@ class _ActiveRideState extends State<ActiveRide> {
                   alignment: Alignment.bottomRight,
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        _showRideDetailsDialog(context, activeRide);
-                      },
-                      backgroundColor: AppColors.uniMaroon,
-                      foregroundColor: AppColors.uniPeach,
-                      child: const Icon(Icons.info),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FloatingActionButton(
+                          onPressed: () {
+                            _initializeActiveRide();
+                          },
+                          backgroundColor: AppColors.uniMaroon,
+                          foregroundColor: AppColors.uniPeach,
+                          child: const Icon(Icons.refresh),
+                        ),
+                        const SizedBox(height: 8.0),
+                        FloatingActionButton(
+                          onPressed: () {
+                            _showRideDetailsDialog(context, activeRide);
+                          },
+                          backgroundColor: AppColors.uniMaroon,
+                          foregroundColor: AppColors.uniPeach,
+                          child: const Icon(Icons.info),
+                        ),
+                      ],
                     ),
                   ),
                 ),

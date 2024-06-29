@@ -31,6 +31,7 @@ class _PersonalRideHistoryState extends State<PersonalRideHistory> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Personal Ride History'),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
