@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ApplicationCard extends StatefulWidget {
+class ApplicationViewModel extends StatefulWidget {
   final String email;
   final String fullName;
   final String matricStaffNumber;
@@ -11,7 +11,7 @@ class ApplicationCard extends StatefulWidget {
   final String college;
   final String photoUrl;
 
-  const ApplicationCard({
+  const ApplicationViewModel({
     super.key,
     required this.email,
     required this.fullName,
@@ -23,10 +23,10 @@ class ApplicationCard extends StatefulWidget {
   });
 
   @override
-  State<ApplicationCard> createState() => _ApplicationCardState();
+  State<ApplicationViewModel> createState() => _ApplicationViewModelState();
 }
 
-class _ApplicationCardState extends State<ApplicationCard> {
+class _ApplicationViewModelState extends State<ApplicationViewModel> {
   Future<void> _acceptApplication() async {
     try {
       final driverDoc = await FirebaseFirestore.instance

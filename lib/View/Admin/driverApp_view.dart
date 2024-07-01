@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projectcar/View/Admin/driver_app_viewmodel.dart';
+import 'package:projectcar/ViewModel/driver_app_viewmodel.dart';
 
 class DriverApplication extends StatefulWidget {
   const DriverApplication({super.key});
@@ -37,7 +37,7 @@ class _DriverApplicationState extends State<DriverApplication> {
               itemBuilder: (context, index) {
                 final Map<String, dynamic> data =
                     documents[index].data() as Map<String, dynamic>;
-                return ApplicationCard(
+                return ApplicationViewModel(
                   email: data['email'] ?? '',
                   fullName: data['fullName'] ?? '',
                   matricStaffNumber: data['matricStaffNumber'] ?? '',
