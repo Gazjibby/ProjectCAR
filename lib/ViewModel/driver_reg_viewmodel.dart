@@ -67,7 +67,7 @@ class DriverRegViewModel {
         'icNumber': icNumber,
         'telephoneNumber': telephoneNumber,
         'college': college,
-        'voteFlag': 0,
+        'voteFlag': '0',
         'Car Details': {
           'photoUrl': photoUrl,
           'plateNumber': plateNumber,

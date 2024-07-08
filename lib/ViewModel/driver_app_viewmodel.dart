@@ -10,6 +10,10 @@ class ApplicationViewModel extends StatefulWidget {
   final String telephoneNumber;
   final String college;
   final String photoUrl;
+  final String carBrand;
+  final String carColor;
+  final String carModel;
+  final String plateNumber;
 
   const ApplicationViewModel({
     super.key,
@@ -20,6 +24,10 @@ class ApplicationViewModel extends StatefulWidget {
     required this.telephoneNumber,
     required this.college,
     required this.photoUrl,
+    required this.carBrand,
+    required this.carColor,
+    required this.carModel,
+    required this.plateNumber,
   });
 
   @override
@@ -132,6 +140,11 @@ class _ApplicationViewModelState extends State<ApplicationViewModel> {
                         title: 'Telephone Number',
                         data: widget.telephoneNumber),
                     DataListTile(title: 'College', data: widget.college),
+                    DataListTile(title: 'Car Brand', data: widget.carBrand),
+                    DataListTile(title: 'Car Color', data: widget.carColor),
+                    DataListTile(title: 'Car Model', data: widget.carModel),
+                    DataListTile(
+                        title: 'Plate Number', data: widget.plateNumber),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

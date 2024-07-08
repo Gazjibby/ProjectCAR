@@ -13,7 +13,9 @@ class _PollResultsPageState extends State<PollResultsPage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<FetchPollsProvider>(context, listen: false).fetchAllPolls();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FetchPollsProvider>(context, listen: false).fetchAllPolls();
+    });
   }
 
   @override
@@ -28,14 +30,14 @@ class _PollResultsPageState extends State<PollResultsPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (pollsProvider.pollsList.isEmpty) {
+          if (pollsProvider.allPollsList.isEmpty) {
             return const Center(child: Text('No polls found.'));
           }
 
           return ListView.builder(
-            itemCount: pollsProvider.pollsList.length,
+            itemCount: pollsProvider.allPollsList.length,
             itemBuilder: (context, index) {
-              final pollDoc = pollsProvider.pollsList[index];
+              final pollDoc = pollsProvider.allPollsList[index];
               final pollData = pollDoc.data() as Map<String, dynamic>;
               final poll = pollData['poll'] as Map<String, dynamic>;
               final options = poll['options'] as List<dynamic>;

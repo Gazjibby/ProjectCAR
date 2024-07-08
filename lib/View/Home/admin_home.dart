@@ -17,9 +17,22 @@ import 'package:projectcar/Providers/poll_db_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:projectcar/ViewModel/admin_home_viewmodel.dart';
 
-class AdminHome extends StatelessWidget {
+class AdminHome extends StatefulWidget {
   final AdminModel admin;
   const AdminHome({Key? key, required this.admin}) : super(key: key);
+
+  @override
+  _AdminHomeState createState() => _AdminHomeState();
+}
+
+class _AdminHomeState extends State<AdminHome> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<FetchPollsProvider>().fetchPolls();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +46,6 @@ class AdminHome extends StatelessWidget {
         ),
         body: Consumer<AdminHomeViewModel>(
           builder: (context, viewModel, child) {
-            if (!viewModel.isFetched) {
-              Future.microtask(() {
-                context.read<FetchPollsProvider>().fetchPolls();
-                viewModel.setFetched(true);
-              });
-            }
-
             return SingleChildScrollView(
               child: SafeArea(
                 child: Column(
@@ -47,9 +53,9 @@ class AdminHome extends StatelessWidget {
                   children: <Widget>[
                     PollsSection(),
                     const SizedBox(height: 16.0),
-                    ButtonRow(),
+                    const ButtonRow(),
                     const SizedBox(height: 30.0),
-                    StatisticsSection(),
+                    const StatisticsSection(),
                   ],
                 ),
               ),
@@ -77,6 +83,14 @@ class PollsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<FetchPollsProvider>(
       builder: (context, polls, child) {
+        if (polls.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (polls.pollsList.isEmpty) {
+          return const Center(child: Text('No active voting sessions.'));
+        }
+
         return Column(
           children: List.generate(polls.pollsList.length, (index) {
             final data = polls.pollsList[index];
@@ -238,13 +252,13 @@ class ButtonRow extends StatelessWidget {
                 onPressed: () {
                   nextPage(context, const RideHistory());
                 },
-                child: const Text('Ride History'),
+                child: const Text('View Ride History'),
               ),
               ElevatedButton(
                 onPressed: () {
                   nextPage(context, const PollResultsPage());
                 },
-                child: const Text('Vote History'),
+                child: const Text('View Vote Results'),
               ),
             ],
           ),
@@ -260,7 +274,6 @@ class StatisticsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -300,25 +313,6 @@ class StatisticsSection extends StatelessWidget {
                     }
                     return Text(
                       'Number of Active Drivers:\n${snapshot.data}',
-                      textAlign: TextAlign.center,
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(width: 10.0),
-            Expanded(
-              child: Container(
-                color: Colors.grey[200],
-                padding: const EdgeInsets.all(8.0),
-                child: FutureBuilder<int>(
-                  future: context.watch<AdminHomeViewModel>().getUsersCount(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    return Text(
-                      'Number of Users:\n${snapshot.data}',
                       textAlign: TextAlign.center,
                     );
                   },
@@ -370,7 +364,12 @@ class StatisticsSection extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 10.0),
+          ],
+        ),
+        const SizedBox(height: 10.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             Expanded(
               child: Container(
                 color: Colors.grey[200],
@@ -384,6 +383,25 @@ class StatisticsSection extends StatelessWidget {
                     }
                     return Text(
                       'Number of Completed Ride Requests:\n${snapshot.data}',
+                      textAlign: TextAlign.center,
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(width: 10.0),
+            Expanded(
+              child: Container(
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<int>(
+                  future: context.watch<AdminHomeViewModel>().getUsersCount(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    return Text(
+                      'Number of Users:\n${snapshot.data}',
                       textAlign: TextAlign.center,
                     );
                   },

@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/active_ride.dart';
 import 'package:projectcar/Model/driver.dart';
@@ -18,6 +20,7 @@ class ActiveRide extends StatefulWidget {
 }
 
 class _ActiveRideState extends State<ActiveRide> {
+  // ignore: unused_field
   LocationService? _locationService;
 
   @override

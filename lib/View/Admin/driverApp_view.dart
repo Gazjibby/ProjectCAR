@@ -44,6 +44,10 @@ class _DriverApplicationState extends State<DriverApplication> {
                   icNumber: data['icNumber'] ?? '',
                   telephoneNumber: data['telephoneNumber'] ?? '',
                   college: data['college'] ?? '',
+                  carBrand: data['Car Details']['carBrand'] ?? '',
+                  carColor: data['Car Details']['carColor'] ?? '',
+                  carModel: data['Car Details']['carModel'] ?? '',
+                  plateNumber: data['Car Details']['plateNumber'] ?? '',
                   photoUrl: data['Car Details'] != null
                       ? data['Car Details']['photoUrl'] ?? ''
                       : '',

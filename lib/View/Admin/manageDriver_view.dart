@@ -64,8 +64,12 @@ class _ManageDriverState extends State<ManageDriver> {
                             DataCell(
                               GestureDetector(
                                 onTap: () {
-                                  viewModel
-                                      .launchPhotoUrl(data['photoUrl'] ?? '');
+                                  final photoUrl =
+                                      data['Car Details']['photoUrl'] ?? '';
+                                  if (photoUrl.isNotEmpty) {
+                                    final uri = Uri.parse(photoUrl);
+                                    viewModel.launchPhotoUrl(uri);
+                                  } else {}
                                 },
                                 child: const Icon(Icons.photo, size: 24),
                               ),

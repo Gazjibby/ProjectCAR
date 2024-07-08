@@ -24,7 +24,7 @@ class AdminHomeViewModel with ChangeNotifier {
   Future<int> getPostedRideReq() async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Ride Request')
-        .where('status', isEqualTo: 'Posted')
+        .where('Status', isEqualTo: 'Posted')
         .get();
     return snapshot.size;
   }
@@ -32,7 +32,7 @@ class AdminHomeViewModel with ChangeNotifier {
   Future<int> getOngoingRideReq() async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Ride Request')
-        .where('status', isEqualTo: 'Ongoing')
+        .where('Status', isEqualTo: 'Ongoing')
         .get();
     return snapshot.size;
   }
@@ -40,7 +40,7 @@ class AdminHomeViewModel with ChangeNotifier {
   Future<int> getCompleteRideReq() async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('Ride Request')
-        .where('status', isEqualTo: 'Completed')
+        .where('Status', isEqualTo: 'Completed')
         .get();
     return snapshot.size;
   }
