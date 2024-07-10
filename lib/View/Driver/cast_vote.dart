@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:projectcar/Utils/message.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/Providers/get_poll_db_provider.dart';
@@ -19,6 +18,17 @@ class _VotePageState extends State<VotePage> {
   bool _isFetched = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FetchPollsProvider>(context, listen: false).fetchPolls();
+      setState(() {
+        _isFetched = true;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -26,15 +36,6 @@ class _VotePageState extends State<VotePage> {
         ),
         body: Consumer<FetchPollsProvider>(
           builder: (context, polls, child) {
-            if (!_isFetched) {
-              polls.fetchPolls();
-              Future.delayed(const Duration(microseconds: 1), () {
-                setState(() {
-                  _isFetched = true;
-                });
-              });
-            }
-
             return SingleChildScrollView(
               child: SafeArea(
                   child: Column(
@@ -43,9 +44,7 @@ class _VotePageState extends State<VotePage> {
                   Column(
                     children: List.generate(polls.pollsList.length, (index) {
                       final data = polls.pollsList[index];
-
                       Map poll = data["poll"];
-
                       List<dynamic> options = poll["options"];
                       Timestamp endDate = poll["endDate"];
                       List voters = poll["voters"];
@@ -55,7 +54,7 @@ class _VotePageState extends State<VotePage> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           border: Border.all(
-                              color: Color.fromARGB(255, 111, 112, 112)),
+                              color: const Color.fromARGB(255, 111, 112, 112)),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
@@ -63,7 +62,7 @@ class _VotePageState extends State<VotePage> {
                           children: [
                             ListTile(
                               contentPadding: const EdgeInsets.all(0),
-                              title: Center(
+                              title: const Center(
                                 child: Text(
                                   "Active Voting Session",
                                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -72,7 +71,8 @@ class _VotePageState extends State<VotePage> {
                               subtitle: Center(
                                 child: Text(
                                   "Ends in ${DateFormat().add_yMEd().format(endDate.toDate())}",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -98,7 +98,7 @@ class _VotePageState extends State<VotePage> {
                                   },
                                 );
                                 return GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
                                     final driver = Provider.of<DriverProvider>(
                                             context,
                                             listen: false)
@@ -108,43 +108,77 @@ class _VotePageState extends State<VotePage> {
                                         driver.matricStaffNumber.isEmpty) {
                                       return;
                                     }
-
-                                    // log(driver.matricStaffNumber);
-
-                                    if (voters.isEmpty) {
-                                      // log("No vote");
-                                      vote.votePoll(
-                                          pollId: data.id,
-                                          pollData: data,
-                                          previousTotalVotes:
-                                              poll["total_votes"],
-                                          driverMatricStaffNumber:
-                                              driver.matricStaffNumber,
-                                          seletedOptions: dataOption["answer"]);
-                                    } else {
-                                      final isExists = voters.firstWhere(
-                                        (element) =>
-                                            element["matricStaffNumber"] ==
-                                            driver.matricStaffNumber,
-                                        orElse: () => null,
-                                      );
-                                      if (isExists == null) {
-                                        // log("Driver does not exist");
-                                        vote.votePoll(
-                                            pollId: data.id,
-                                            pollData: data,
-                                            previousTotalVotes:
-                                                poll["total_votes"],
-                                            driverMatricStaffNumber:
-                                                driver.matricStaffNumber,
-                                            seletedOptions:
-                                                dataOption["answer"]);
-                                      } else {
-                                        error(context,
-                                            message: "You have already voted!");
-                                      }
-                                      print(isExists.toString());
+                                    final isExists = voters.firstWhere(
+                                      (element) =>
+                                          element["driverMatricStaffNumber"] ==
+                                          driver.matricStaffNumber,
+                                      orElse: () => null,
+                                    );
+                                    if (isExists != null) {
+                                      error(context,
+                                          message: "You have already voted!");
+                                      return;
                                     }
+
+                                    DocumentSnapshot driverDoc =
+                                        await FirebaseFirestore.instance
+                                            .collection('drivers')
+                                            .doc(driver.matricStaffNumber)
+                                            .get();
+
+                                    if (driverDoc.exists &&
+                                        driverDoc['voteFlag'] == '1') {
+                                      error(context,
+                                          message: "You have already voted!");
+                                      return;
+                                    }
+
+                                    bool? confirm = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Confirm Vote'),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                  'Are you sure you want to vote for "${dataOption["answer"]}"?'),
+                                              const SizedBox(height: 10),
+                                              const Text(
+                                                  'You can only vote once until the admin starts another voting session.'),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(false);
+                                              },
+                                              child: Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(true);
+                                              },
+                                              child: Text('Confirm'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                    if (confirm != true) {
+                                      return;
+                                    }
+
+                                    vote.votePoll(
+                                      pollId: data.id,
+                                      pollData: data,
+                                      previousTotalVotes: poll["total_votes"],
+                                      driverMatricStaffNumber:
+                                          driver.matricStaffNumber,
+                                      seletedOptions: dataOption["answer"],
+                                    );
                                   },
                                   child: Container(
                                     margin: const EdgeInsets.only(bottom: 5),

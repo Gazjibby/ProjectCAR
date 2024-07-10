@@ -52,18 +52,18 @@ class PollDbProvider extends ChangeNotifier {
     }
   }
 
-  void votePoll(
-      {required String? pollId,
-      required DocumentSnapshot pollData,
-      required int previousTotalVotes,
-      required String driverMatricStaffNumber,
-      required String seletedOptions}) async {
+  void votePoll({
+    required String? pollId,
+    required DocumentSnapshot pollData,
+    required int previousTotalVotes,
+    required String driverMatricStaffNumber,
+    required String seletedOptions,
+  }) async {
     _status = true;
     notifyListeners();
 
     try {
       List voters = pollData['poll']["voters"];
-
       voters.add({
         "driverMatricStaffNumber": driverMatricStaffNumber,
         "selected_option": seletedOptions,
@@ -73,10 +73,6 @@ class PollDbProvider extends ChangeNotifier {
       for (var i in options) {
         if (i["answer"] == seletedOptions) {
           i["percent"]++;
-        } else {
-          if (i["percent"] > 0) {
-            i["percent"]--;
-          }
         }
       }
 
@@ -93,7 +89,17 @@ class PollDbProvider extends ChangeNotifier {
       };
 
       await pollCollection.doc(pollId).update(data);
-      _message = "Vote Recorded";
+
+      QuerySnapshot driverSnapshot = await FirebaseFirestore.instance
+          .collection('drivers')
+          .where('matricStaffNumber', isEqualTo: driverMatricStaffNumber)
+          .get();
+
+      for (var doc in driverSnapshot.docs) {
+        await doc.reference.update({"voteFlag": "1"});
+      }
+
+      _message = "Vote Recorded and voteFlag updated";
       _status = false;
       notifyListeners();
     } on FirebaseException catch (e) {

@@ -14,6 +14,7 @@ import 'package:projectcar/View/Admin/vote_result.dart';
 import 'package:provider/provider.dart';
 import 'package:projectcar/Providers/get_poll_db_provider.dart';
 import 'package:projectcar/Providers/poll_db_provider.dart';
+import 'package:projectcar/Providers/logout_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:projectcar/ViewModel/admin_home_viewmodel.dart';
 
@@ -43,6 +44,18 @@ class _AdminHomeState extends State<AdminHome> {
           backgroundColor: AppColors.uniMaroon,
           foregroundColor: AppColors.uniGold,
           title: const Text('Admin Home'),
+          actions: [
+            Consumer<LogoutProvider>(
+              builder: (context, logoutProvider, child) {
+                return IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    logoutProvider.logout(context);
+                  },
+                );
+              },
+            ),
+          ],
         ),
         body: Consumer<AdminHomeViewModel>(
           builder: (context, viewModel, child) {
