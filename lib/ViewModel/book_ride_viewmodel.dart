@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projectcar/Model/user.dart';
 import 'package:projectcar/Providers/ride_template_provider.dart';
 import 'package:projectcar/Utils/notifications.dart';
+import 'package:projectcar/View/User/report_driver.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -639,6 +640,21 @@ class BookRideViewModel extends ChangeNotifier {
           ],
         );
       },
+    );
+  }
+
+  void routeReportDriver() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final String userMatricStaffNumber = userProvider.user!.matricStaffNumber;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReportDriver(
+            driverAccepted: driverdetail!,
+            userRequest: userMatricStaffNumber,
+            rideID: activeRideId!),
+      ),
     );
   }
 }

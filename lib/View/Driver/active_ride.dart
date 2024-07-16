@@ -5,6 +5,7 @@ import 'package:projectcar/Model/active_ride.dart';
 import 'package:projectcar/Model/driver.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';
 import 'package:projectcar/Utils/colours.dart';
+import 'package:projectcar/View/Driver/report_user.dart';
 import 'package:projectcar/ViewModel/active_ride_viewmodel.dart';
 import 'package:projectcar/Utils/location.dart';
 import 'package:provider/provider.dart';
@@ -278,6 +279,23 @@ class _ActiveRideState extends State<ActiveRide> {
                           backgroundColor: AppColors.uniMaroon,
                           foregroundColor: AppColors.uniPeach,
                           child: const Icon(Icons.refresh),
+                        ),
+                        const SizedBox(height: 8.0),
+                        FloatingActionButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReportUser(
+                                    driverAccepted: activeRide.driverAccepted,
+                                    userRequest: activeRide.userRequest,
+                                    rideID: activeRide.rideID),
+                              ),
+                            );
+                          },
+                          backgroundColor: AppColors.uniMaroon,
+                          foregroundColor: AppColors.uniPeach,
+                          child: const Icon(Icons.warning),
                         ),
                         const SizedBox(height: 8.0),
                         FloatingActionButton(

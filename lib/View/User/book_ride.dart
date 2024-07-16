@@ -340,67 +340,95 @@ class _BookRideState extends State<BookRide> {
                         ),
                         const Spacer(),
                         Container(
-                          margin:
-                              const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                FloatingActionButton(
-                                  heroTag: "detailsButton",
-                                  onPressed: () {
-                                    viewModel.showDetails(context);
-                                  },
-                                  backgroundColor: AppColors.uniMaroon,
-                                  foregroundColor: AppColors.uniGold,
-                                  child: const Icon(Icons.info),
+                          margin: const EdgeInsets.only(
+                              bottom: 10.0, left: 10.0, right: 10.0),
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    FloatingActionButton(
+                                      heroTag: "detailsButton",
+                                      onPressed: () {
+                                        viewModel.showDetails(context);
+                                      },
+                                      backgroundColor: AppColors.uniMaroon,
+                                      foregroundColor: AppColors.uniGold,
+                                      child: const Icon(Icons.info),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    FloatingActionButton(
+                                      heroTag: "bookingButton",
+                                      onPressed: () async {
+                                        bool hasActiveRide =
+                                            await viewModel.hasActiveRide();
+                                        if (hasActiveRide) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'You already have an active ride. Please complete it before booking a new one.',
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          viewModel.showBookingForm(context);
+                                        }
+                                      },
+                                      backgroundColor: AppColors.uniMaroon,
+                                      foregroundColor: AppColors.uniGold,
+                                      child: const Icon(Icons.directions_car),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    FloatingActionButton(
+                                      heroTag: "refreshButton",
+                                      onPressed: _fetchRideStatusAndLoadRoute,
+                                      backgroundColor: AppColors.uniMaroon,
+                                      foregroundColor: AppColors.uniGold,
+                                      child: const Icon(Icons.refresh),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 8),
-                                FloatingActionButton(
-                                  heroTag: "bookingButton",
+                              ),
+                              Positioned(
+                                bottom: 2.0,
+                                left: 2.0,
+                                child: FloatingActionButton(
                                   onPressed: () async {
                                     bool hasActiveRide =
                                         await viewModel.hasActiveRide();
                                     if (hasActiveRide) {
+                                      viewModel.routeReportDriver();
+                                    } else if (viewModel.driverdetail == null) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
                                           content: Text(
-                                            'You already have an active ride. Please complete it before booking a new one.',
+                                            'No driver Accepted the ride request',
                                           ),
                                         ),
                                       );
                                     } else {
-                                      viewModel.showBookingForm(context);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Cannot create report while there is no active ride',
+                                          ),
+                                        ),
+                                      );
                                     }
                                   },
                                   backgroundColor: AppColors.uniMaroon,
                                   foregroundColor: AppColors.uniGold,
-                                  child: const Icon(Icons.directions_car),
+                                  child: const Icon(Icons.warning),
                                 ),
-                                const SizedBox(height: 8),
-                                FloatingActionButton(
-                                  heroTag: "refreshButton",
-                                  onPressed: _fetchRideStatusAndLoadRoute,
-                                  backgroundColor: AppColors.uniMaroon,
-                                  foregroundColor: AppColors.uniGold,
-                                  child: const Icon(Icons.refresh),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                        /* Align(
-                          alignment: Alignment.bottomLeft,
-                          child: FloatingActionButton(
-                            heroTag: "refreshButton",
-                            onPressed: _fetchRideStatusAndLoadRoute,
-                            backgroundColor: AppColors.uniMaroon,
-                            foregroundColor: AppColors.uniGold,
-                            child: const Icon(Icons.refresh_rounded),
-                          ),
-                        ), */
+                        )
                       ],
                     ),
                   );
