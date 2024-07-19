@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'package:flutter/material.dart';
 import 'package:projectcar/Model/active_ride.dart';
 import 'package:projectcar/Providers/active_ride_provider.dart';

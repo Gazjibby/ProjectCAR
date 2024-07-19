@@ -218,64 +218,63 @@ class _RideHistoryState extends State<RideHistory> {
                                               ),
                                               const SizedBox(height: 16),
                                               Container(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                decoration: BoxDecoration(
-                                                  color: theme.colorScheme
-                                                      .surfaceContainerHighest,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: Wrap(
-                                                  spacing: 8.0,
-                                                  runSpacing: 8.0,
-                                                  children: rideHistory
-                                                      .statusHistory
-                                                      .map((status) =>
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: theme
-                                                                  .colorScheme
-                                                                  .primary
-                                                                  .withOpacity(
-                                                                      0.1),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  decoration: BoxDecoration(
+                                                    color: theme.colorScheme
+                                                        .surfaceContainerHighest,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: Wrap(
+                                                    spacing: 8.0,
+                                                    runSpacing: 8.0,
+                                                    children:
+                                                        rideHistory
+                                                            .statusHistory
+                                                            .map(
+                                                                (status) =>
+                                                                    Container(
+                                                                      padding: const EdgeInsets
+                                                                          .all(
                                                                           8.0),
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  status['Status'] ??
-                                                                      '',
-                                                                  style: theme
-                                                                      .textTheme
-                                                                      .bodyMedium,
-                                                                ),
-                                                                const SizedBox(
-                                                                    height:
-                                                                        4.0),
-                                                                Text(
-                                                                  status['UpTime'] ??
-                                                                      '',
-                                                                  style: theme
-                                                                      .textTheme
-                                                                      .bodySmall,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ))
-                                                      .toList(),
-                                                ),
-                                              ),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: theme
+                                                                            .colorScheme
+                                                                            .primary
+                                                                            .withOpacity(0.1),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(8.0),
+                                                                      ),
+                                                                      child:
+                                                                          Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                            status['Status'] ??
+                                                                                '',
+                                                                            style:
+                                                                                theme.textTheme.bodyMedium,
+                                                                          ),
+                                                                          const SizedBox(
+                                                                              height: 4.0),
+                                                                          Text(
+                                                                            status['UpTime'] ??
+                                                                                '',
+                                                                            style:
+                                                                                theme.textTheme.bodySmall,
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ))
+                                                            .toList(),
+                                                  ),
+                                                  Row(
+                                                    children: [],
+                                                  )),
                                             ],
                                           ),
                                         ),
