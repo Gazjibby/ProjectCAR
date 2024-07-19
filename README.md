@@ -25,7 +25,7 @@ PREBET UTM mobile application aims to move the users of the current PREBET UTM s
 
 ## Important
 
-When cloning this repository please reconfigure the firebase connection to a new account. Using FlutterFire CLI can ease the process as it will automate the process. Please also get a new google service account .json folder in the google cloud console. This repository does not include the current service account folder. Remember to also allow your firebase permission and rules to read and write.
+When cloning this repository please reconfigure the firebase connection to a new account. Using FlutterFire CLI can ease the process as it will automate the process. Please also get a new google service account .json folder in the google cloud console as it contains personal information. This repository does not include the current service account folder. Remember to also allow your firebase permission and rules to read and write.
 
 ## Installation Setup and Guide
 
